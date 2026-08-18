@@ -1,19 +1,253 @@
-<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lost Guitar</title>
-<style>body{margin:0;background:#080808;color:#fff;font-family:Arial}header{padding:22px 18px;background:#080808}.brand{font-size:28px;font-weight:800;color:#e50914}.greet{font-size:20px;margin-top:8px}main{padding:0 18px 80px}.search{width:100%;padding:14px;box-sizing:border-box;background:#171717;color:#fff;border:1px solid #333;border-radius:12px;font-size:16px}.card{background:#121212;border:1px solid #292929;border-radius:14px;padding:14px;margin:10px 0}.row{display:flex;gap:10px;align-items:center}.cover{width:52px;height:52px;border-radius:9px;background:#e50914;display:grid;place-items:center}.grow{flex:1}.small{color:#aaa;font-size:13px}button{background:#e50914;color:#fff;border:0;border-radius:9px;padding:10px 13px;font-weight:bold}.dark{background:#292929}.bottom{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #333;display:flex;justify-content:space-around;padding:8px}.bottom button{background:transparent;color:#ddd}</style></head>
-<body><header><div class="brand">LOST GUITAR</div><div id="greet" class="greet"></div></header><main>
-<input id="search" class="search" placeholder="Search your music..." oninput="render()">
-<h2>Creator's Picks</h2><div class="card"><b>Late Night Guitar</b><div class="small">A starter playlist</div></div>
-<h2>Your Music</h2><button onclick="Android.pickMp3()">＋ Upload MP3</button><div id="songs"></div>
-<h2>Profile</h2><div class="card"><input id="name" class="search" placeholder="Your name"><button onclick="save()">Save</button></div>
-</main><nav class="bottom"><button onclick="scrollTo(0,0)">Home</button><button onclick="document.getElementById('search').focus()">Search</button><button onclick="scrollTo(0,document.body.scrollHeight)">Profile</button></nav>
-<script>
-let songs=JSON.parse(localStorage.songs||'[]');
-function greet(){let h=new Date().getHours(),p=h<12?'Good morning':h<18?'Good afternoon':'Good evening';document.getElementById('greet').textContent=p+' - '+(localStorage.name||'there')}
-function save(){localStorage.name=document.getElementById('name').value.trim()||'there';greet()}
-window.addImportedMp3=function(u){let n=decodeURIComponent(u.split('/').pop()||'Imported MP3').replace(/\.[^.]+$/,'');songs.push({n:n,u:u,f:0});localStorage.songs=JSON.stringify(songs);render()}
-function play(i){new Audio(songs[i].u).play().catch(()=>alert('Could not play this MP3.'))}
-function fav(i){songs[i].f=!songs[i].f;localStorage.songs=JSON.stringify(songs);render()}
-function render(){let q=document.getElementById('search').value.toLowerCase(),box=document.getElementById('songs');box.innerHTML='';let a=songs.map((s,i)=>[s,i]).filter(x=>x[0].n.toLowerCase().includes(q));if(!a.length){box.innerHTML='<div class="card small">No MP3s yet.</div>';return}a.forEach(x=>{let d=document.createElement('div');d.className='card';d.innerHTML='<div class="row"><div class="cover">♪</div><div class="grow"><b>'+esc(x[0].n)+'</b><div class="small">MP3</div></div><button onclick="play('+x[1]+')">Play</button><button class="dark" onclick="fav('+x[1]+')">'+(x[0].f?'♥':'♡')+'</button></div>';box.appendChild(d)})}
-function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-document.getElementById('name').value=localStorage.name||'';greet();render();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lost Guitar</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: #050505;
+  color: white;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Faint guitar background */
+.guitar-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+  opacity: 0.08;
+}
+
+.guitar {
+  position: absolute;
+  color: #ff0015;
+  font-size: 150px;
+  transform: rotate(-25deg);
+}
+
+.guitar:nth-child(1) {
+  top: 80px;
+  left: -45px;
+}
+
+.guitar:nth-child(2) {
+  top: 430px;
+  right: -55px;
+  transform: rotate(25deg);
+}
+
+.guitar:nth-child(3) {
+  top: 850px;
+  left: -40px;
+  transform: rotate(-20deg);
+}
+
+/* Main app */
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: auto;
+  padding: 25px 20px 120px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ff0818;
+}
+
+.guitar-icon {
+  font-size: 30px;
+}
+
+/* Greeting */
+.greeting {
+  color: #aaa;
+  font-size: 15px;
+  margin-bottom: 25px;
+}
+
+/* Search */
+.search {
+  width: 100%;
+  padding: 17px 20px;
+  border-radius: 16px;
+  border: 1px solid #292929;
+  background: #111;
+  color: white;
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 30px;
+}
+
+.search:focus {
+  border-color: #ff0718;
+  box-shadow: 0 0 0 2px rgba(255,0,20,.12);
+}
+
+.search::placeholder {
+  color: #666;
+}
+
+/* Sections */
+.section-title {
+  font-size: 23px;
+  font-weight: 800;
+  margin: 28px 0 14px;
+}
+
+/* Creator pick */
+.pick {
+  background: linear-gradient(135deg, #171717, #0d0d0d);
+  border: 1px solid #292929;
+  border-radius: 18px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pick::after {
+  content: "🎸";
+  position: absolute;
+  right: 15px;
+  bottom: -20px;
+  font-size: 100px;
+  opacity: .08;
+}
+
+.pick-title {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.pick-subtitle {
+  color: #888;
+  margin-top: 5px;
+}
+
+/* Upload */
+.upload {
+  width: 100%;
+  background: #ff0718;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.upload:active {
+  transform: scale(.98);
+}
+
+/* Song card */
+.song {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #111;
+  border: 1px solid #292929;
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.cover {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ff0018, #5b0008);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  flex-shrink: 0;
+}
+
+.song-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-name {
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-type {
+  color: #777;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.play {
+  background: #ff0718;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 15px;
+  font-weight: 800;
+}
+
+.favorite {
+  background: #242424;
+  color: white;
+  border: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  font-size: 20px;
+}
+
+/* Empty state */
+.empty {
+  text-align: center;
+  color: #666;
+  padding: 35px 10px;
+}
+
+/* Profile */
+.profile {
+  background: #111;
+  border: 1px solid #292929;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.profile input {
+  width: 100%;
+  padding: 15px;
+  border-radius: 13px;
+  border: 1px solid #292929;
+  background: #191919;
+  color: white;
+  font-size: 16px;
+  outline:
