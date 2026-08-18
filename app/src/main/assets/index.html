@@ -3,190 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Lost Guitar</title>
 
 <style>
 * {
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  background: #050505;
+  background: #080808;
   color: white;
   font-family: Arial, sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
 /* Faint guitar background */
-.guitar-bg {
+body::before {
+  content: "🎸   🎸   🎸   🎸   🎸";
   position: fixed;
   inset: 0;
+  font-size: 100px;
+  line-height: 2.2;
+  letter-spacing: 45px;
+  color: rgba(255, 0, 20, 0.035);
+  transform: rotate(-15deg) scale(1.4);
   pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-  opacity: 0.08;
-}
-
-.guitar {
-  position: absolute;
-  color: #ff0015;
-  font-size: 150px;
-  transform: rotate(-25deg);
-}
-
-.guitar:nth-child(1) {
-  top: 80px;
-  left: -45px;
-}
-
-.guitar:nth-child(2) {
-  top: 430px;
-  right: -55px;
-  transform: rotate(25deg);
-}
-
-.guitar:nth-child(3) {
-  top: 850px;
-  left: -40px;
-  transform: rotate(-20deg);
-}
-
-/* Main app */
-.app {
-  position: relative;
-  z-index: 1;
-  max-width: 700px;
-  margin: auto;
-  padding: 25px 20px 120px;
+  z-index: -1;
 }
 
 /* Header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
+header {
+  padding: 28px 20px 12px;
 }
 
 .logo {
+  color: #ff101d;
   font-size: 30px;
   font-weight: 900;
   letter-spacing: 2px;
-  color: #ff0818;
 }
 
-.guitar-icon {
-  font-size: 30px;
+.subtitle {
+  color: #888;
+  margin-top: 6px;
+  font-size: 14px;
 }
 
-/* Greeting */
-.greeting {
-  color: #aaa;
-  font-size: 15px;
-  margin-bottom: 25px;
+/* Main */
+main {
+  padding: 10px 18px 110px;
+  max-width: 700px;
+  margin: auto;
 }
 
-/* Search */
 .search {
   width: 100%;
-  padding: 17px 20px;
+  padding: 17px 18px;
   border-radius: 16px;
   border: 1px solid #292929;
-  background: #111;
+  background: #141414;
   color: white;
   font-size: 16px;
   outline: none;
-  margin-bottom: 30px;
+  margin: 15px 0 28px;
 }
 
 .search:focus {
-  border-color: #ff0718;
-  box-shadow: 0 0 0 2px rgba(255,0,20,.12);
+  border-color: #ff101d;
 }
 
-.search::placeholder {
-  color: #666;
+h2 {
+  font-size: 22px;
+  margin: 25px 0 14px;
 }
 
-/* Sections */
-.section-title {
-  font-size: 23px;
-  font-weight: 800;
-  margin: 28px 0 14px;
-}
-
-/* Creator pick */
-.pick {
-  background: linear-gradient(135deg, #171717, #0d0d0d);
+/* Cards */
+.card {
+  background: rgba(20,20,20,.94);
   border: 1px solid #292929;
   border-radius: 18px;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.pick::after {
-  content: "🎸";
-  position: absolute;
-  right: 15px;
-  bottom: -20px;
-  font-size: 100px;
-  opacity: .08;
+  padding: 18px;
+  margin-bottom: 14px;
 }
 
 .pick-title {
-  font-size: 20px;
-  font-weight: 800;
+  font-size: 19px;
+  font-weight: bold;
 }
 
-.pick-subtitle {
+.small {
   color: #888;
   margin-top: 5px;
 }
 
 /* Upload */
 .upload {
-  width: 100%;
-  background: #ff0718;
+  display: inline-block;
+  background: #ed0b18;
   color: white;
-  border: none;
-  border-radius: 14px;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 800;
+  padding: 14px 18px;
+  border-radius: 13px;
+  font-weight: bold;
   cursor: pointer;
-  margin-bottom: 15px;
+  margin: 8px 0 18px;
 }
 
-.upload:active {
-  transform: scale(.98);
+.upload:active,
+button:active {
+  transform: scale(.97);
 }
 
-/* Song card */
+input[type="file"] {
+  display: none;
+}
+
+/* Songs */
 .song {
   display: flex;
   align-items: center;
-  gap: 14px;
-  background: #111;
+  gap: 13px;
+  background: #151515;
   border: 1px solid #292929;
   border-radius: 18px;
-  padding: 14px;
+  padding: 13px;
   margin-bottom: 12px;
 }
 
 .cover {
-  width: 58px;
-  height: 58px;
+  width: 55px;
+  height: 55px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #ff0018, #5b0008);
+  background: #ed0b18;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 25px;
+  font-size: 27px;
   flex-shrink: 0;
 }
 
@@ -196,58 +152,330 @@ body {
 }
 
 .song-name {
-  font-weight: 800;
+  font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .song-type {
-  color: #777;
+  color: #888;
   font-size: 13px;
   margin-top: 4px;
 }
 
-.play {
-  background: #ff0718;
+button {
+  border: 0;
+  background: #ed0b18;
   color: white;
-  border: none;
-  border-radius: 12px;
   padding: 11px 15px;
-  font-weight: 800;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 14px;
 }
 
 .favorite {
-  background: #242424;
-  color: white;
-  border: none;
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
+  background: #292929;
   font-size: 20px;
-}
-
-/* Empty state */
-.empty {
-  text-align: center;
-  color: #666;
-  padding: 35px 10px;
+  padding: 8px 12px;
+  margin-left: 3px;
 }
 
 /* Profile */
-.profile {
-  background: #111;
-  border: 1px solid #292929;
-  border-radius: 18px;
-  padding: 18px;
-}
-
-.profile input {
+.profile-input {
   width: 100%;
+  background: #151515;
+  border: 1px solid #303030;
+  color: white;
   padding: 15px;
   border-radius: 13px;
-  border: 1px solid #292929;
-  background: #191919;
-  color: white;
   font-size: 16px;
-  outline:
+  outline: none;
+  margin-bottom: 10px;
+}
+
+/* Bottom navigation */
+nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: rgba(17,17,17,.97);
+  border-top: 1px solid #292929;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 10;
+}
+
+nav button {
+  background: transparent;
+  color: #999;
+  font-size: 14px;
+  padding: 10px 25px;
+}
+
+nav button.active {
+  color: white;
+}
+
+/* Player */
+.player {
+  position: fixed;
+  bottom: 72px;
+  left: 12px;
+  right: 12px;
+  background: #191919;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 10px;
+  display: none;
+  z-index: 9;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  color: #777;
+  text-align: center;
+  padding: 25px;
+}
+
+/* Hide sections */
+.section {
+  display: block;
+}
+
+.hidden {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">LOST GUITAR</div>
+  <div class="subtitle" id="greeting">Good evening</div>
+</header>
+
+<main>
+
+  <!-- HOME -->
+  <section id="homeSection" class="section">
+
+    <input
+      id="searchInput"
+      class="search"
+      type="search"
+      placeholder="Search your music..."
+      autocomplete="off"
+    >
+
+    <h2>Creator's Picks</h2>
+
+    <div class="card">
+      <div class="pick-title">🎸 Late Night Guitar</div>
+      <div class="small">A starter playlist for the late hours.</div>
+    </div>
+
+    <h2>Your Music</h2>
+
+    <label class="upload">
+      + Upload MP3
+      <input id="fileInput" type="file" accept="audio/*">
+    </label>
+
+    <div id="songs"></div>
+
+  </section>
+
+  <!-- SEARCH -->
+  <section id="searchSection" class="section hidden">
+    <h2>Search</h2>
+
+    <input
+      id="searchPageInput"
+      class="search"
+      type="search"
+      placeholder="Find a song..."
+      autocomplete="off"
+    >
+
+    <div id="searchResults"></div>
+  </section>
+
+  <!-- PROFILE -->
+  <section id="profileSection" class="section hidden">
+
+    <h2>Profile</h2>
+
+    <div class="card">
+      <input
+        id="nameInput"
+        class="profile-input"
+        placeholder="Your name"
+        maxlength="30"
+      >
+
+      <button onclick="saveName()">Save</button>
+    </div>
+
+    <div class="card">
+      <div class="pick-title">Lost Guitar</div>
+      <div class="small">Your personal music space 🎸</div>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- Mini player -->
+<div id="player" class="player">
+  <div class="player-row">
+    <div class="cover">🎸</div>
+    <div id="playerName" class="player-name">Nothing playing</div>
+    <button onclick="togglePlay()" id="playButton">▶</button>
+  </div>
+</div>
+
+<!-- Navigation -->
+<nav>
+  <button id="homeBtn" class="active" onclick="showSection('home')">Home</button>
+  <button id="searchBtn" onclick="showSection('search')">Search</button>
+  <button id="profileBtn" onclick="showSection('profile')">Profile</button>
+</nav>
+
+<script>
+"use strict";
+
+let songs = [];
+let currentAudio = null;
+let currentIndex = -1;
+
+/* Greeting */
+function updateGreeting() {
+  const hour = new Date().getHours();
+
+  let text = "Good morning";
+
+  if (hour >= 12 && hour < 18) {
+    text = "Good afternoon";
+  } else if (hour >= 18) {
+    text = "Good evening";
+  }
+
+  const name = localStorage.getItem("lostGuitarName");
+
+  document.getElementById("greeting").textContent =
+    name ? text + " — " + name : text;
+}
+
+/* Load songs */
+function loadSongs() {
+  try {
+    songs = JSON.parse(localStorage.getItem("lostGuitarSongs") || "[]");
+
+    if (!Array.isArray(songs)) {
+      songs = [];
+    }
+  } catch (e) {
+    songs = [];
+  }
+
+  renderSongs();
+}
+
+/* Save songs */
+function saveSongs() {
+  try {
+    localStorage.setItem("lostGuitarSongs", JSON.stringify(songs));
+  } catch (e) {
+    alert("This MP3 is too large to save on the device.");
+  }
+}
+
+/* Upload */
+document.getElementById("fileInput").addEventListener("change", function(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  if (!file.type.startsWith("audio/")) {
+    alert("Please choose an audio file.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function() {
+
+    const song = {
+      name: file.name.replace(/\.[^/.]+$/, ""),
+      data: reader.result,
+      favorite: false
+    };
+
+    songs.push(song);
+    saveSongs();
+    renderSongs();
+
+    alert("MP3 added to Lost Guitar! 🎸");
+  };
+
+  reader.onerror = function() {
+    alert("Couldn't read that MP3.");
+  };
+
+  reader.readAsDataURL(file);
+
+  event.target.value = "";
+});
+
+/* Render */
+function renderSongs(filter = "") {
+
+  const box = document.getElementById("songs");
+
+  const query = filter.toLowerCase().trim();
+
+  const filtered = songs.filter(song =>
+    song.name.toLowerCase().includes(query)
+  );
+
+  if (filtered.length === 0) {
+    box.innerHTML = `
+      <div class="card empty">
+        ${songs.length === 0 ? "No MP3s yet. Upload your first song 🎸" : "No songs found."}
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML = "";
+
+  filtered.forEach(function(song) {
+
+    const realIndex = songs.indexOf(song);
+
+    const div = document.createElement("div");
+    div.className = "song";
+
+    div.innerHTML = `
+      <div class="cover">🎸</div>
+
+      <div class="song-info">
+        <div class="song-name">${
