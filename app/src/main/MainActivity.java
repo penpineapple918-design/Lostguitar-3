@@ -4,14 +4,17 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
-import android.provider.OpenableColumns;
-import android.database.Cursor;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class MainActivity extends Activity {
+
     private static final int PICK_MP3 = 42;
+    private static final int PICK_PFP = 43;
+    private static final int PICK_BANNER = 44;
+
     private WebView web;
 
     @Override
@@ -19,11 +22,17 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         web = new WebView(this);
-        web.getSettings().setJavaScriptEnabled(true);
-        web.getSettings().setDomStorageEnabled(true);
+
+        WebSettings settings = web.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
+        settings.setMediaPlaybackRequiresUserGesture(false);
+
         web.setWebViewClient(new WebViewClient());
 
-        web.addJavascriptInterface(new Bridge(), "Android");
+        web.addJavascriptInterface(new AndroidBridge(), "Android");
 
         web.loadDataWithBaseURL(
                 "https://lostguitar.local/",
@@ -36,15 +45,36 @@ public class MainActivity extends Activity {
         setContentView(web);
     }
 
-    class Bridge {
+    public class AndroidBridge {
+
         @JavascriptInterface
-        public void pickMp3() {
+        public void pickMP3() {
             Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.setType("audio/*");
+            i.setType("audio/mpeg");
             i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             i.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
             startActivityForResult(i, PICK_MP3);
+        }
+
+        @JavascriptInterface
+        public void pickPFP() {
+            Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.setType("image/*");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            i.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            startActivityForResult(i, PICK_PFP);
+        }
+
+        @JavascriptInterface
+        public void pickBanner() {
+            Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            i.addCategory(Intent.CATEGORY_OPENABLE);
+            i.setType("image/*");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            i.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            startActivityForResult(i, PICK_BANNER);
         }
     }
 
@@ -52,52 +82,42 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_MP3 &&
-                resultCode == RESULT_OK &&
-                data != null &&
-                data.getData() != null) {
+        if (resultCode != RESULT_OK || data == null || data.getData() == null) {
+            return;
+        }
 
-            Uri uri = data.getData();
+        Uri uri = data.getData();
 
-            try {
-                getContentResolver().takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                );
-            } catch (Exception ignored) {}
+        try {
+            getContentResolver().takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+            );
+        } catch (Exception ignored) {
+        }
 
-            String name = "Imported MP3";
+        String uriString = uri.toString()
+                .replace("\\", "\\\\")
+                .replace("'", "\\'");
 
-            try {
-                Cursor cursor = getContentResolver().query(
-                        uri,
-                        new String[]{OpenableColumns.DISPLAY_NAME},
-                        null,
-                        null,
-                        null
-                );
-
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                        if (index >= 0) {
-                            name = cursor.getString(index);
-                        }
-                    }
-                    cursor.close();
-                }
-            } catch (Exception ignored) {}
-
-            String safeUri = uri.toString()
-                    .replace("\\", "\\\\")
-                    .replace("'", "\\'");
-
-            String safeName = name
-                    .replace("\\", "\\\\")
-                    .replace("'", "\\'");
+        if (requestCode == PICK_MP3) {
 
             web.evaluateJavascript(
-                    "addSong('" + safeUri + "','" + safeName + "')",
+                    "addSong('" + uriString + "');",
+                    null
+            );
+
+        } else if (requestCode == PICK_PFP) {
+
+            web.evaluateJavascript(
+                    "changePFP('" + uriString + "');",
+                    null
+            );
+
+        } else if (requestCode == PICK_BANNER) {
+
+            web.evaluateJavascript(
+                    "changeBanner('" + uriString + "');",
                     null
             );
         }
@@ -105,177 +125,434 @@ public class MainActivity extends Activity {
 
     private static final String HTML =
             "<!DOCTYPE html>" +
-            "<html><head>" +
+
+            "<html>" +
+            "<head>" +
+
+            "<meta charset='UTF-8'>" +
             "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
 
+            "<title>Lost Guitar</title>" +
+
             "<style>" +
-            "*{box-sizing:border-box}" +
-            "body{margin:0;background:#080606;color:white;font-family:Arial,sans-serif;min-height:100vh;overflow-x:hidden}" +
-            "body:before{content:'🎸';position:fixed;font-size:260px;opacity:.025;left:-50px;top:80px;transform:rotate(-25deg);pointer-events:none}" +
-            "header{padding:28px 20px 15px}" +
-            ".logo{font-size:30px;font-weight:900;color:#ff0b18;letter-spacing:2px}" +
-            ".greeting{font-size:18px;color:#ddd;margin-top:7px}" +
-            "main{padding:0 18px 110px}" +
-            ".banner{min-height:145px;border-radius:22px;padding:22px;margin:10px 0 20px;background:linear-gradient(135deg,#50070d,#130507);border:1px solid #7a1820;position:relative;overflow:hidden;box-shadow:0 8px 30px #0008}" +
-            ".banner:after{content:'🎸';position:absolute;right:10px;bottom:-28px;font-size:135px;opacity:.08;transform:rotate(-20deg)}" +
-            ".banner h2{margin:0 0 8px;font-size:25px}" +
-            ".banner p{color:#bbb;margin:0;max-width:240px;line-height:1.4}" +
-            ".section{font-size:24px;font-weight:800;margin:25px 0 12px}" +
-            ".search{width:100%;padding:17px;border-radius:16px;border:1px solid #572024;background:#180b0c;color:white;font-size:16px;outline:none;transition:.2s}" +
-            ".search:focus{border-color:#ff101b;box-shadow:0 0 15px #ff101b55}" +
-            "button{border:0;border-radius:13px;padding:13px 18px;background:#ed0712;color:white;font-size:16px;font-weight:bold}" +
-            "button:active{transform:scale(.97)}" +
-            ".upload{margin:8px 0 15px;width:100%;font-size:17px}" +
-            ".song{background:linear-gradient(145deg,#181313,#100e0e);border:1px solid #302525;border-radius:18px;padding:14px;margin:10px 0;display:flex;align-items:center;gap:12px;box-shadow:0 5px 15px #0005}" +
-            ".cover{width:54px;height:54px;flex-shrink:0;border-radius:14px;background:#e50914;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 12px #e5091444}" +
-            ".info{flex:1;min-width:0}" +
-            ".title{font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}" +
-            ".small{color:#999;font-size:13px;margin-top:5px}" +
-            ".play{padding:10px 14px}" +
-            ".empty{text-align:center;color:#777;padding:30px 10px}" +
-            ".profile{background:#141111;border:1px solid #302525;border-radius:20px;padding:18px;box-shadow:0 8px 25px #0005}" +
-            ".avatar{width:70px;height:70px;border-radius:50%;background:#e50914;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:12px}" +
-            ".profile input{width:100%;padding:14px;background:#0c0a0a;border:1px solid #333;border-radius:12px;color:white;font-size:16px;margin-bottom:10px;outline:none}" +
-            ".player{position:fixed;left:12px;right:12px;bottom:78px;background:linear-gradient(145deg,#36090e,#1b0507);border:1px solid #68131a;border-radius:20px;padding:15px;display:none;box-shadow:0 10px 35px #000;z-index:20}" +
-            ".playerTitle{font-weight:bold;margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}" +
-            ".playerControls{display:flex;gap:8px;align-items:center}" +
-            ".pause{background:#292525;padding:10px 14px}" +
-            "audio{width:100%;height:38px;flex:1}" +
-            "nav{position:fixed;bottom:0;left:0;right:0;height:65px;background:#111;border-top:1px solid #302525;display:flex;justify-content:space-around;align-items:center;z-index:30}" +
-            "nav button{background:none;color:#888;font-size:14px;padding:10px}" +
-            "nav button.active{color:white}" +
-            ".page{display:none}.page.active{display:block}" +
-            "</style></head><body>" +
 
-            "<header>" +
-            "<div class='logo'>LOST GUITAR</div>" +
-            "<div class='greeting' id='greeting'></div>" +
-            "</header>" +
+            "*{box-sizing:border-box;}" +
 
-            "<main>" +
+            "body{" +
+            "margin:0;" +
+            "background:#080808;" +
+            "color:white;" +
+            "font-family:Arial,sans-serif;" +
+            "min-height:100vh;" +
+            "padding-bottom:90px;" +
+            "}" +
+
+            "button{" +
+            "border:0;" +
+            "border-radius:13px;" +
+            "padding:13px 17px;" +
+            "background:#f01825;" +
+            "color:white;" +
+            "font-size:15px;" +
+            "font-weight:bold;" +
+            "}" +
+
+            "button:active{" +
+            "transform:scale(.97);" +
+            "}" +
+
+            ".page{display:none;padding:18px;}" +
+            ".page.active{display:block;}" +
+
+            ".logo{" +
+            "font-size:27px;" +
+            "font-weight:900;" +
+            "margin-bottom:20px;" +
+            "}" +
+
+            ".logo span{color:#f01825;}" +
+
+            ".banner{" +
+            "position:relative;" +
+            "height:170px;" +
+            "border-radius:20px;" +
+            "overflow:hidden;" +
+            "background:linear-gradient(135deg,#500a10,#160708);" +
+            "margin-bottom:18px;" +
+            "display:flex;" +
+            "align-items:center;" +
+            "justify-content:center;" +
+            "text-align:center;" +
+            "}" +
+
+            ".banner img{" +
+            "position:absolute;" +
+            "width:100%;" +
+            "height:100%;" +
+            "object-fit:cover;" +
+            "display:none;" +
+            "}" +
+
+            ".bannerContent{" +
+            "position:relative;" +
+            "z-index:2;" +
+            "}" +
+
+            ".banner h2{" +
+            "margin:0 0 7px 0;" +
+            "font-size:26px;" +
+            "}" +
+
+            ".banner p{" +
+            "margin:0;" +
+            "color:#ccc;" +
+            "}" +
+
+            ".bannerChange{" +
+            "position:absolute;" +
+            "right:10px;" +
+            "top:10px;" +
+            "z-index:5;" +
+            "padding:9px 12px;" +
+            "font-size:12px;" +
+            "background:rgba(0,0,0,.7);" +
+            "}" +
+
+            ".search{" +
+            "width:100%;" +
+            "padding:16px;" +
+            "border-radius:15px;" +
+            "border:1px solid #333;" +
+            "background:#151515;" +
+            "color:white;" +
+            "font-size:16px;" +
+            "outline:none;" +
+            "margin-bottom:18px;" +
+            "}" +
+
+            ".search:focus{" +
+            "border-color:#f01825;" +
+            "}" +
+
+            ".sectionTitle{" +
+            "display:flex;" +
+            "justify-content:space-between;" +
+            "align-items:center;" +
+            "margin:20px 0 10px;" +
+            "font-size:20px;" +
+            "font-weight:bold;" +
+            "}" +
+
+            ".sectionTitle small{" +
+            "font-size:11px;" +
+            "color:#888;" +
+            "}" +
+
+            ".song{" +
+            "display:flex;" +
+            "align-items:center;" +
+            "gap:12px;" +
+            "background:#151515;" +
+            "border:1px solid #292929;" +
+            "border-radius:16px;" +
+            "padding:11px;" +
+            "margin-bottom:10px;" +
+            "}" +
+
+            ".cover{" +
+            "width:55px;" +
+            "height:55px;" +
+            "border-radius:12px;" +
+            "background:#f01825;" +
+            "display:flex;" +
+            "align-items:center;" +
+            "justify-content:center;" +
+            "font-size:24px;" +
+            "flex-shrink:0;" +
+            "overflow:hidden;" +
+            "}" +
+
+            ".cover img{" +
+            "width:100%;" +
+            "height:100%;" +
+            "object-fit:cover;" +
+            "}" +
+
+            ".songInfo{" +
+            "flex:1;" +
+            "min-width:0;" +
+            "}" +
+
+            ".songName{" +
+            "font-weight:bold;" +
+            "white-space:nowrap;" +
+            "overflow:hidden;" +
+            "text-overflow:ellipsis;" +
+            "}" +
+
+            ".songType{" +
+            "font-size:12px;" +
+            "color:#888;" +
+            "margin-top:4px;" +
+            "}" +
+
+            ".playBtn{" +
+            "background:#f01825;" +
+            "width:45px;" +
+            "height:45px;" +
+            "padding:0;" +
+            "border-radius:50%;" +
+            "}" +
+
+            ".empty{" +
+            "text-align:center;" +
+            "color:#777;" +
+            "padding:30px 10px;" +
+            "}" +
+
+            ".profileCard{" +
+            "background:#141414;" +
+            "border:1px solid #292929;" +
+            "border-radius:20px;" +
+            "padding:20px;" +
+            "text-align:center;" +
+            "}" +
+
+            ".avatar{" +
+            "width:90px;" +
+            "height:90px;" +
+            "border-radius:50%;" +
+            "background:#f01825;" +
+            "margin:0 auto 12px;" +
+            "display:flex;" +
+            "align-items:center;" +
+            "justify-content:center;" +
+            "font-size:34px;" +
+            "overflow:hidden;" +
+            "}" +
+
+            ".avatar img{" +
+            "width:100%;" +
+            "height:100%;" +
+            "object-fit:cover;" +
+            "}" +
+
+            ".profileButtons{" +
+            "display:flex;" +
+            "gap:10px;" +
+            "margin-top:15px;" +
+            "}" +
+
+            ".profileButtons button{" +
+            "flex:1;" +
+            "}" +
+
+            ".upload{" +
+            "margin-top:15px;" +
+            "background:#202020;" +
+            "border:1px solid #333;" +
+            "}" +
+
+            ".player{" +
+            "position:fixed;" +
+            "left:10px;" +
+            "right:10px;" +
+            "bottom:70px;" +
+            "background:#202020;" +
+            "border:1px solid #333;" +
+            "border-radius:20px;" +
+            "padding:14px;" +
+            "display:none;" +
+            "z-index:20;" +
+            "box-shadow:0 10px 35px #000;" +
+            "}" +
+
+            ".playerTitle{" +
+            "font-weight:bold;" +
+            "margin-bottom:8px;" +
+            "white-space:nowrap;" +
+            "overflow:hidden;" +
+            "text-overflow:ellipsis;" +
+            "}" +
+
+            "audio{" +
+            "width:100%;" +
+            "height:40px;" +
+            "}" +
+
+            ".nav{" +
+            "position:fixed;" +
+            "bottom:0;" +
+            "left:0;" +
+            "right:0;" +
+            "height:65px;" +
+            "background:#101010;" +
+            "border-top:1px solid #292929;" +
+            "display:flex;" +
+            "z-index:30;" +
+            "}" +
+
+            ".nav button{" +
+            "flex:1;" +
+            "background:transparent;" +
+            "border-radius:0;" +
+            "color:#888;" +
+            "font-size:12px;" +
+            "}" +
+
+            ".nav button.active{" +
+            "color:white;" +
+            "}" +
+
+            "</style>" +
+
+            "</head>" +
+
+            "<body>" +
 
             "<section id='home' class='page active'>" +
+
+            "<div class='logo'>LOST <span>GUITAR</span></div>" +
+
             "<div class='banner'>" +
-            "<h2>Welcome back 🎸</h2>" +
-            "<p>Your music. Your sound. Your Lost Guitar.</p>" +
+            "<img id='bannerImage'>" +
+            "<button class='bannerChange' onclick='Android.pickBanner()'>Change Banner</button>" +
+            "<div class='bannerContent'>" +
+            "<h2>Find your sound.</h2>" +
+            "<p>Your music. Your space.</p>" +
+            "</div>" +
             "</div>" +
 
-            "<div class='section'>Your Music</div>" +
-            "<button class='upload' onclick='Android.pickMp3()'>＋ Upload MP3</button>" +
+            "<input id='homeSearch' class='search' placeholder='Search your music...' oninput='searchSongs(this.value)'>" +
+
+            "<div class='sectionTitle'>Your Music <small id='count'>0 SONGS</small></div>" +
+
+            "<button class='upload' onclick='Android.pickMP3()'>＋ Upload MP3</button>" +
+
             "<div id='songs'></div>" +
 
-            "<div class='section'>Recently Played</div>" +
-            "<div id='recent'></div>" +
             "</section>" +
 
             "<section id='searchPage' class='page'>" +
-            "<div class='section'>Search Your Music</div>" +
-            "<input class='search' id='search' placeholder='🔎 Search songs...' oninput='searchSongs()'>" +
-            "<div id='results' class='empty'>Type a song name to search.</div>" +
+
+            "<div class='logo'>SEARCH</div>" +
+
+            "<input id='searchInput' class='search' placeholder='Search songs...' oninput='searchSongs(this.value)'>" +
+
+            "<div id='results' class='empty'>Search for a song.</div>" +
+
             "</section>" +
 
             "<section id='profilePage' class='page'>" +
-            "<div class='section'>Profile</div>" +
-            "<div class='profile'>" +
-            "<div class='avatar'>🎸</div>" +
-            "<input id='username' placeholder='Your username'>" +
-            "<input id='bio' placeholder='Your bio'>" +
-            "<button onclick='saveProfile()'>Save Profile</button>" +
+
+            "<div class='logo'>PROFILE</div>" +
+
+            "<div class='profileCard'>" +
+
+            "<div class='avatar' id='avatar'>🎸</div>" +
+
+            "<h2 id='usernameText'>Guitar Player</h2>" +
+
+            "<input id='username' class='search' placeholder='Username'>" +
+
+            "<div class='profileButtons'>" +
+            "<button onclick='saveUsername()'>Save Name</button>" +
+            "<button onclick='Android.pickPFP()'>Change PFP</button>" +
             "</div>" +
+
+            "</div>" +
+
             "</section>" +
 
-            "</main>" +
-
-            "<div class='player' id='player'>" +
-            "<div class='playerTitle' id='playerTitle'></div>" +
-            "<div class='playerControls'>" +
+            "<div id='player' class='player'>" +
+            "<div id='playerTitle' class='playerTitle'>Nothing playing</div>" +
             "<audio id='audio' controls></audio>" +
-            "<button class='pause' onclick='togglePause()' id='pauseBtn'>Ⅱ</button>" +
-            "</div>" +
             "</div>" +
 
-            "<nav>" +
-            "<button id='homeBtn' class='active' onclick='showPage(\"home\")'>🏠 Home</button>" +
-            "<button id='searchBtn' onclick='showPage(\"searchPage\")'>🔎 Search</button>" +
-            "<button id='profileBtn' onclick='showPage(\"profilePage\")'>👤 Profile</button>" +
+            "<nav class='nav'>" +
+            "<button id='homeBtn' class='active' onclick='showPage(\"home\")'>HOME</button>" +
+            "<button id='searchBtn' onclick='showPage(\"searchPage\")'>SEARCH</button>" +
+            "<button id='profileBtn' onclick='showPage(\"profilePage\")'>PROFILE</button>" +
             "</nav>" +
 
             "<script>" +
 
-            "var songs=JSON.parse(localStorage.getItem('songs')||'[]');" +
-            "var recent=JSON.parse(localStorage.getItem('recent')||'[]');" +
+            "let songs = JSON.parse(localStorage.getItem('songs') || '[]');" +
+            "let recent = JSON.parse(localStorage.getItem('recent') || '[]');" +
 
-            "function greeting(){" +
-            "var h=new Date().getHours();" +
-            "var word=h<12?'Good morning':h<18?'Good afternoon':'Good night';" +
-            "var name=localStorage.getItem('username')||'there';" +
-            "document.getElementById('greeting').textContent=word+' '+name+' 👋';" +
-            "}" +
-
-            "function saveProfile(){" +
-            "var n=document.getElementById('username').value.trim();" +
-            "var b=document.getElementById('bio').value.trim();" +
-            "if(n)localStorage.setItem('username',n);" +
-            "localStorage.setItem('bio',b);" +
-            "greeting();" +
-            "alert('Profile saved! 🎸');" +
-            "}" +
-
-            "function addSong(uri,name){" +
-            "songs.push({name:name||'Imported MP3',url:uri});" +
+            "function saveSongs(){" +
             "localStorage.setItem('songs',JSON.stringify(songs));" +
+            "}" +
+
+            "function addSong(url){" +
+            "if(!url)return;" +
+
+            "let name='MP3 Song '+(songs.length+1);" +
+
+            "let song={" +
+            "name:name," +
+            "url:url" +
+            "};" +
+
+            "songs.push(song);" +
+            "saveSongs();" +
             "render();" +
-            "searchSongs();" +
+
+            "playSong(songs.length-1);" +
             "}" +
 
-            "function playSong(i){" +
-            "var s=songs[i];" +
-            "if(!s)return;" +
-            "var a=document.getElementById('audio');" +
-            "a.src=s.url;" +
-            "document.getElementById('playerTitle').textContent=s.name;" +
-            "document.getElementById('player').style.display='block';" +
-            "a.play().catch(function(){});" +
-            "document.getElementById('pauseBtn').textContent='Ⅱ';" +
-            "recent=recent.filter(function(x){return x.url!==s.url;});" +
-            "recent.unshift(s);" +
-            "recent=recent.slice(0,8);" +
+            "function playSong(index){" +
+            "if(!songs[index])return;" +
+
+            "let song=songs[index];" +
+            "let audio=document.getElementById('audio');" +
+            "let player=document.getElementById('player');" +
+            "let title=document.getElementById('playerTitle');" +
+
+            "title.textContent=song.name;" +
+            "audio.src=song.url;" +
+            "player.style.display='block';" +
+
+            "audio.play().catch(function(){});" +
+
+            "recent=recent.filter(function(x){return x.url!==song.url;});" +
+            "recent.unshift(song);" +
+            "recent=recent.slice(0,10);" +
             "localStorage.setItem('recent',JSON.stringify(recent));" +
-            "renderRecent();" +
             "}" +
 
-            "function togglePause(){" +
-            "var a=document.getElementById('audio');" +
-            "var b=document.getElementById('pauseBtn');" +
-            "if(a.paused){a.play();b.textContent='Ⅱ';}else{a.pause();b.textContent='▶';}" +
+            "function render(list){" +
+
+            "let box=document.getElementById('songs');" +
+            "let arr=list || songs;" +
+
+            "document.getElementById('count').textContent=songs.length+' SONGS';" +
+
+            "if(!arr.length){" +
+            "box.innerHTML='<div class=\"empty\">No MP3s yet. Upload one! 🎸</div>';" +
+            "return;" +
             "}" +
 
-            "function searchSongs(){" +
-            "var input=document.getElementById('search');" +
-            "var box=document.getElementById('results');" +
-            "if(!input||!box)return;" +
-            "var q=input.value.toLowerCase().trim();" +
-            "if(!q){" +
-            "box.className='empty';" +
-            "box.textContent=songs.length?'Start typing to search your music.':'Upload an MP3 first 🎸';" +
-            "return;" +
-            "}" +
-            "var found=songs.filter(function(s){return (s.name||'').toLowerCase().includes(q);});" +
-            "if(!found.length){" +
-            "box.className='empty';" +
-            "box.textContent='No songs found 😭';" +
-            "return;" +
-            "}" +
-            "box.className='';" +
             "box.innerHTML='';" +
-            "found.forEach(function(s){" +
-            "var i=songs.indexOf(s);" +
-            "box.innerHTML+=" +
-            "'<div class=\"song\">'+" +
-            "'<div class=\"cover\">♪</div>'+" +
-            "'<div class=\"info\"><div class=\"title\">'+escapeHtml(s.name)+'</div><div class=\"small\">MP3</div></div>'+" +
-            "'<button class=\"play\" onclick=\"playSong('+i+')\">Play</button>'+" +
+
+            "arr.forEach(function(song){" +
+
+            "let index=songs.indexOf(song);" +
+
+            "box.innerHTML += " +
+            "'<div class=\"song\">' +" +
+
+            "'<div class=\"cover\">🎵</div>' +" +
+
+            "'<div class=\"songInfo\">' +" +
+            "'<div class=\"songName\">'+escapeHtml(song.name)+'</div>' +" +
+            "'<div class=\"songType\">MP3</div>' +" +
+            "'</div>' +" +
+
+            "'<button class=\"playBtn\" onclick=\"playSong('+index+')\">▶</button>' +" +
+
             "'</div>';" +
+
             "});" +
             "}" +
 
@@ -285,63 +562,118 @@ public class MainActivity extends Activity {
             "});" +
             "}" +
 
-            "function render(){" +
-            "var box=document.getElementById('songs');" +
-            "if(!songs.length){" +
-            "box.innerHTML='<div class=\"empty\">No MP3s yet. Upload one! 🎸</div>';" +
-            "return;" +
-            "}" +
-            "box.innerHTML='';" +
-            "songs.forEach(function(s,i){" +
-            "box.innerHTML+=" +
-            "'<div class=\"song\">'+" +
-            "'<div class=\"cover\">♪</div>'+" +
-            "'<div class=\"info\"><div class=\"title\">'+escapeHtml(s.name)+'</div><div class=\"small\">MP3</div></div>'+" +
-            "'<button class=\"play\" onclick=\"playSong('+i+')\">Play</button>'+" +
+            "function searchSongs(value){" +
+
+            "value=(value||'').toLowerCase();" +
+
+            "let found=songs.filter(function(song){" +
+            "return song.name.toLowerCase().includes(value);" +
+            "});" +
+
+            "let results=document.getElementById('results');" +
+
+            "if(document.getElementById('searchPage').classList.contains('active')){" +
+
+            "if(!found.length){" +
+            "results.innerHTML='<div class=\"empty\">No songs found.</div>';" +
+            "}else{" +
+
+            "results.innerHTML='';" +
+
+            "found.forEach(function(song){" +
+            "let index=songs.indexOf(song);" +
+
+            "results.innerHTML += " +
+            "'<div class=\"song\">' +" +
+            "'<div class=\"cover\">🎵</div>' +" +
+            "'<div class=\"songInfo\"><div class=\"songName\">'+escapeHtml(song.name)+'</div><div class=\"songType\">MP3</div></div>' +" +
+            "'<button class=\"playBtn\" onclick=\"playSong('+index+')\">▶</button>' +" +
             "'</div>';" +
+
             "});" +
             "}" +
+            "}else{" +
+            "render(found);" +
+            "}" +
+            "}" +
 
-            "function renderRecent(){" +
-            "var box=document.getElementById('recent');" +
-            "if(!recent.length){" +
-            "box.innerHTML='<div class=\"empty\">Nothing played yet.</div>';" +
-            "return;" +
+            "function changePFP(url){" +
+
+            "if(!url)return;" +
+
+            "localStorage.setItem('pfp',url);" +
+
+            "let avatar=document.getElementById('avatar');" +
+
+            "avatar.innerHTML='<img src=\"'+url+'\">';" +
             "}" +
-            "box.innerHTML='';" +
-            "recent.forEach(function(s){" +
-            "var i=songs.findIndex(function(x){return x.url===s.url;});" +
-            "if(i>=0){" +
-            "box.innerHTML+=" +
-            "'<div class=\"song\">'+" +
-            "'<div class=\"cover\">↻</div>'+" +
-            "'<div class=\"info\"><div class=\"title\">'+escapeHtml(s.name)+'</div><div class=\"small\">Recently played</div></div>'+" +
-            "'<button class=\"play\" onclick=\"playSong('+i+')\">Play</button>'+" +
-            "'</div>';" +
+
+            "function changeBanner(url){" +
+
+            "if(!url)return;" +
+
+            "localStorage.setItem('banner',url);" +
+
+            "let image=document.getElementById('bannerImage');" +
+
+            "image.src=url;" +
+            "image.style.display='block';" +
+
             "}" +
+
+            "function saveUsername(){" +
+
+            "let name=document.getElementById('username').value.trim();" +
+
+            "if(!name)return;" +
+
+            "localStorage.setItem('username',name);" +
+            "document.getElementById('usernameText').textContent=name;" +
+
+            "}" +
+
+            "function showPage(page){" +
+
+            "document.querySelectorAll('.page').forEach(function(x){" +
+            "x.classList.remove('active');" +
             "});" +
+
+            "document.getElementById(page).classList.add('active');" +
+
+            "document.querySelectorAll('.nav button').forEach(function(x){" +
+            "x.classList.remove('active');" +
+            "});" +
+
+            "if(page==='home')document.getElementById('homeBtn').classList.add('active');" +
+            "if(page==='searchPage')document.getElementById('searchBtn').classList.add('active');" +
+            "if(page==='profilePage')document.getElementById('profileBtn').classList.add('active');" +
+
+            "if(page==='searchPage'){" +
+            "searchSongs(document.getElementById('searchInput').value);" +
             "}" +
 
-            "function showPage(p){" +
-            "document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active');});" +
-            "document.getElementById(p).classList.add('active');" +
-            "document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});" +
-            "if(p==='home')document.getElementById('homeBtn').classList.add('active');" +
-            "if(p==='searchPage'){" +
-            "document.getElementById('searchBtn').classList.add('active');" +
-            "document.getElementById('search').focus();" +
-            "searchSongs();" +
-            "}" +
-            "if(p==='profilePage'){" +
-            "document.getElementById('profileBtn').classList.add('active');" +
-            "document.getElementById('username').value=localStorage.getItem('username')||'';" +
-            "document.getElementById('bio').value=localStorage.getItem('bio')||'';" +
-            "}" +
             "}" +
 
-            "greeting();" +
+            "window.onload=function(){" +
+
+            "let pfp=localStorage.getItem('pfp');" +
+            "if(pfp)changePFP(pfp);" +
+
+            "let banner=localStorage.getItem('banner');" +
+            "if(banner)changeBanner(banner);" +
+
+            "let username=localStorage.getItem('username');" +
+            "if(username){" +
+            "document.getElementById('usernameText').textContent=username;" +
+            "document.getElementById('username').value=username;" +
+            "}" +
+
             "render();" +
-            "renderRecent();" +
 
-            "</script></body></html>";
-                }
+            "};" +
+
+            "</script>" +
+
+            "</body>" +
+            "</html>";
+                          }
