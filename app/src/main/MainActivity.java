@@ -1,38 +1,92 @@
 package com.lostguitar.app;
+
 import android.app.Activity;
-import android.content.*;
-import android.net.Uri;
 import android.os.Bundle;
+import android.content.Intent;
+import android.net.Uri;
 import android.webkit.*;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
-    static final int PICK=42;
-    WebView w;
-    @Override public void onCreate(Bundle b) {
+
+    private static final int FILE_PICKER = 42;
+    private ValueCallback<Uri[]> fileCallback;
+    private WebView w;
+
+    @Override
+    public void onCreate(Bundle b) {
         super.onCreate(b);
-        w=new WebView(this);
-        w.getSettings().setJavaScriptEnabled(true);
-        w.getSettings().setDomStorageEnabled(true);
+
+        w = new WebView(this);
+
+        WebSettings s = w.getSettings();
+        s.setJavaScriptEnabled(true);
+        s.setDomStorageEnabled(true);
+        s.setAllowFileAccess(true);
+        s.setAllowContentAccess(true);
+
         w.setWebViewClient(new WebViewClient());
-        w.addJavascriptInterface(new Bridge(),"Android");
+
+        w.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(
+                    WebView view,
+                    ValueCallback<Uri[]> callback,
+                    FileChooserParams params) {
+
+                fileCallback = callback;
+
+                Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("audio/*");
+
+                try {
+                    startActivityForResult(i, FILE_PICKER);
+                } catch (Exception e) {
+                    fileCallback = null;
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Couldn't open music files",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+
+                return true;
+            }
+        });
+
+        w.addJavascriptInterface(new Bridge(), "Android");
+
         w.loadUrl("file:///android_asset/index.html");
         setContentView(w);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == FILE_PICKER && fileCallback != null) {
+
+            Uri[] result = null;
+
+            if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+                result = new Uri[]{data.getData()};
+            }
+
+            fileCallback.onReceiveValue(result);
+            fileCallback = null;
+        }
+    }
+
     class Bridge {
-        @JavascriptInterface public void pickMp3() {
-            Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+        @JavascriptInterface
+        public void pickMp3() {
+            Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
-            i.setType("audio/mpeg");
-            startActivityForResult(i,PICK);
+            i.setType("audio/*");
+
+            startActivityForResult(i, FILE_PICKER);
         }
     }
-    @Override protected void onActivityResult(int r,int c,Intent d) {
-        super.onActivityResult(r,c,d);
-        if(r==PICK&&c==RESULT_OK&&d!=null&&d.getData()!=null) {
-            Uri u=d.getData();
-            try { getContentResolver().takePersistableUriPermission(u,Intent.FLAG_GRANT_READ_URI_PERMISSION); } catch(Exception ignored) {}
-            String s=u.toString().replace("\\","\\\\").replace("'","\\'");
-            w.evaluateJavascript("window.addImportedMp3('"+s+"')",null);
-        }
-    }
-}
+                        }
