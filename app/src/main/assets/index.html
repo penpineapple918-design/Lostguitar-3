@@ -4,269 +4,1236 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lost Guitar</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#080808;color:#fff;font-family:Arial,sans-serif}
-body:before,body:after{content:"🎸";position:fixed;font-size:150px;opacity:.035;z-index:-1}
-body:before{top:100px;left:-45px;transform:rotate(-25deg)}
-body:after{bottom:100px;right:-45px;transform:rotate(25deg)}
-.app{max-width:650px;margin:auto;padding:20px 16px 100px}
-.page{display:none}.page.on{display:block}
-h1,h2,p{margin:0}.logo{font-size:25px;font-weight:900;margin-bottom:25px}.logo b{color:#f01825}
-.greet small{color:#888}.greet h1{margin:5px 0 22px;font-size:30px}
-.search{width:100%;padding:15px 18px;border-radius:16px;border:1px solid #333;background:#151515;color:#fff;outline:0;margin-bottom:20px}
-.search:focus{border-color:#f01825}
-.redsearch{background:#27090c;border:2px solid #f01825}
-.card{background:#151515;border:1px solid #292929;border-radius:18px;padding:18px;margin-bottom:15px}
-.feature{background:linear-gradient(135deg,#40090d,#130707);border-color:#4d151a;min-height:130px}
-.feature b{color:#f01825;font-size:11px}.feature h2{margin:8px 0}.muted{color:#777}
-.title{display:flex;justify-content:space-between;align-items:center;margin:25px 0 12px}.title small{color:#f01825}
-.upload{display:block;text-align:center;background:#f01825;padding:14px;border-radius:14px;font-weight:bold;margin-bottom:12px}
-input[type=file]{display:none}
-.song{display:flex;align-items:center;gap:11px;background:#151515;border:1px solid #292929;border-radius:16px;padding:10px;margin:8px 0}
-.cover{width:52px;height:52px;border-radius:13px;background:linear-gradient(135deg,#f01825,#55070c);display:grid;place-items:center;font-size:22px}
-.info{flex:1;min-width:0}.name{font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.type{font-size:11px;color:#777;margin-top:4px}
-.btn{border:0;border-radius:12px;padding:11px;background:#f01825;color:#fff}.heart{background:#292929;color:#aaa}.heart.on{color:#f01825}
-.empty{text-align:center;color:#666;padding:30px 5px}
-.banner{height:140px;border-radius:20px 20px 0 0;background:linear-gradient(135deg,#500a10,#160708);overflow:hidden;position:relative}
-.banner:after{content:"🎸";position:absolute;right:10px;top:-25px;font-size:130px;opacity:.08}
-.profile{background:#151515;border:1px solid #292929;border-top:0;border-radius:0 0 20px 20px;padding:0 20px 20px}
-.avatar{width:82px;height:82px;margin-top:-41px;border:5px solid #151515;border-radius:50%;background:#f01825;display:grid;place-items:center;font-size:28px;overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.user{font-size:23px;font-weight:900;margin-top:10px}.status{color:#38d353;font-size:13px;margin:5px 0}.bio{color:#999;margin-bottom:18px}
-.field{width:100%;background:#202020;border:1px solid #333;color:#fff;padding:13px;border-radius:12px;margin:5px 0;outline:0}
-textarea.field{height:80px;resize:none}
-.player{display:none;position:fixed;left:12px;right:12px;bottom:76px;max-width:626px;margin:auto;background:linear-gradient(145deg,#40090d,#170708);border:1px solid #60151c;border-radius:23px;padding:15px;z-index:5;box-shadow:0 10px 30px #000}
-.player .top{display:flex;align-items:center;gap:11px}.pinfo{flex:1;min-width:0}
-.range{width:100%;accent-color:#f01825}.times{display:flex;justify-content:space-between;color:#999;font-size:10px}
-.controls{text-align:center;margin-top:7px}.controls button{background:0;border:0;color:#fff;font-size:21px;margin:0 12px}.controls .main{background:#fff;color:#111;border-radius:50%;width:46px;height:46px}
-.nav{position:fixed;bottom:0;left:0;right:0;height:65px;background:#0d0d0d;border-top:1px solid #292929;z-index:6;display:flex;justify-content:center}.nav button{flex:1;max-width:215px;border:0;background:0;color:#777;font-weight:bold}.nav button.on{color:#fff}.nav span{display:block;font-size:20px;margin-bottom:3px}
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#080808;
+  color:#fff;
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+  padding-bottom:75px;
+}
+
+body:before{
+  content:"🎸";
+  position:fixed;
+  font-size:150px;
+  opacity:.025;
+  top:0;
+  left:-45px;
+  transform:rotate(-25deg);
+  pointer-events:none;
+}
+
+body:after{
+  content:"♪";
+  position:fixed;
+  font-size:150px;
+  opacity:.025;
+  bottom:0;
+  right:-45px;
+  transform:rotate(25deg);
+  pointer-events:none;
+}
+
+button{
+  border:0;
+  border-radius:13px;
+  padding:12px 17px;
+  background:#f01825;
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+}
+
+button:active{
+  transform:scale(.97);
+}
+
+input,
+textarea{
+  font-family:Arial,sans-serif;
+}
+
+.page{
+  display:none;
+  max-width:650px;
+  margin:auto;
+  padding:20px 16px 100px;
+}
+
+.page.active{
+  display:block;
+}
+
+.logo{
+  font-size:25px;
+  font-weight:900;
+  margin-bottom:20px;
+}
+
+.logo b{
+  color:#f01825;
+}
+
+.greet{
+  background:#292525;
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:15px;
+}
+
+.greet small{
+  color:#aaa;
+}
+
+.greet h1{
+  margin:5px 0 0;
+  font-size:30px;
+}
+
+.search{
+  width:100%;
+  padding:15px 18px;
+  border-radius:16px;
+  border:1px solid #333;
+  background:#151515;
+  color:white;
+  outline:none;
+  font-size:16px;
+  margin-bottom:15px;
+}
+
+.search:focus{
+  border-color:#f01825;
+  box-shadow:0 0 12px #f0182533;
+}
+
+.feature{
+  background:linear-gradient(135deg,#40090d,#130707);
+  border:1px solid #4d151a;
+  min-height:130px;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.feature b{
+  color:#f01825;
+  font-size:12px;
+}
+
+.feature h2{
+  margin:8px 0;
+}
+
+.feature p{
+  color:#aaa;
+  margin:0;
+}
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:25px 0 12px;
+}
+
+.section-title h2{
+  margin:0;
+}
+
+.section-title small{
+  color:#888;
+}
+
+.upload{
+  display:block;
+  text-align:center;
+  background:#f01825;
+  padding:14px;
+  border-radius:13px;
+  margin:10px 0 18px;
+}
+
+input[type=file]{
+  display:none;
+}
+
+.song{
+  background:#151515;
+  border:1px solid #292929;
+  border-radius:18px;
+  padding:12px;
+  margin:10px 0;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.cover{
+  width:54px;
+  height:54px;
+  flex-shrink:0;
+  border-radius:13px;
+  background:linear-gradient(135deg,#f01825,#50090e);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  overflow:hidden;
+}
+
+.cover img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.info{
+  flex:1;
+  min-width:0;
+}
+
+.name{
+  font-weight:bold;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.small{
+  color:#999;
+  font-size:13px;
+  margin-top:4px;
+}
+
+.song button{
+  padding:10px 12px;
+}
+
+.empty{
+  text-align:center;
+  color:#777;
+  padding:30px 10px;
+}
+
+.banner{
+  height:170px;
+  border-radius:20px 20px 0 0;
+  background:linear-gradient(135deg,#500a10,#160708);
+  position:relative;
+  overflow:hidden;
+}
+
+.banner img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.profile-card{
+  background:#151515;
+  border:1px solid #302525;
+  border-radius:20px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+
+.profile-info{
+  padding:0 18px 18px;
+}
+
+.avatar{
+  width:82px;
+  height:82px;
+  margin-top:-41px;
+  border:5px solid #151515;
+  border-radius:50%;
+  background:#f01825;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  overflow:hidden;
+}
+
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.user{
+  font-size:23px;
+  font-weight:900;
+  margin-top:10px;
+}
+
+.status{
+  color:#38d353;
+  font-size:13px;
+  margin-top:4px;
+}
+
+.field{
+  width:100%;
+  background:#202020;
+  border:1px solid #333;
+  color:#fff;
+  padding:13px;
+  border-radius:12px;
+  margin:5px 0 12px;
+  outline:none;
+}
+
+textarea.field{
+  height:80px;
+  resize:none;
+}
+
+.profile-button{
+  width:100%;
+  margin-top:4px;
+}
+
+.image-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+
+.image-buttons label{
+  text-align:center;
+  background:#292929;
+  padding:12px;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.player{
+  display:none;
+  position:fixed;
+  left:12px;
+  right:12px;
+  bottom:76px;
+  max-width:626px;
+  margin:auto;
+  background:#161616;
+  border:1px solid #68131a;
+  border-radius:20px;
+  padding:15px;
+  z-index:20;
+  box-shadow:0 10px 35px #000;
+}
+
+.player.show{
+  display:block;
+}
+
+.playerTitle{
+  font-weight:bold;
+  margin-bottom:8px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+audio{
+  width:100%;
+  height:38px;
+}
+
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:65px;
+  background:#0d0d0d;
+  border-top:1px solid #292929;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:30;
+}
+
+.nav button{
+  background:none;
+  color:#888;
+  padding:8px 12px;
+  font-size:12px;
+}
+
+.nav button.active{
+  color:#f01825;
+}
+
+.nav-icon{
+  display:block;
+  font-size:22px;
+  margin-bottom:2px;
+}
+
+.results{
+  margin-top:5px;
+}
+
+.profile-actions{
+  display:flex;
+  gap:10px;
+}
+
+.profile-actions button{
+  flex:1;
+}
+
+hr{
+  border:0;
+  border-top:1px solid #292929;
+  margin:20px 0;
+}
+
+@media(max-width:400px){
+  .page{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .greet h1{
+    font-size:26px;
+  }
+
+  .image-buttons{
+    grid-template-columns:1fr;
+  }
+}
 </style>
 </head>
+
 <body>
 
-<div class="app">
+<!-- HOME -->
+<section id="home" class="page active">
 
-<section id="home" class="page on">
-<div class="logo">LOST <b>GUITAR</b></div>
-<div class="greet"><small id="greeting"></small><h1>Find your sound.</h1></div>
+  <div class="logo">
+    Lost <b>Guitar</b>
+  </div>
 
-<input id="homeSearch" class="search" placeholder="Search your music..." onclick="go('search')">
+  <div class="greet">
+    <small id="greeting">WELCOME</small>
+    <h1>Find your sound.</h1>
+  </div>
 
-<div class="card feature"><b>CREATOR'S PICK</b><h2>Late Night Guitar</h2><p class="muted">A collection for quiet nights.</p></div>
+  <input
+    id="homeSearch"
+    class="search"
+    placeholder="Search your music..."
+    oninput="searchSongs(this.value)"
+  >
 
-<div class="title"><h2>Recently Played</h2><small>HISTORY</small></div>
-<div id="recent"></div>
+  <div class="feature">
+    <b>🎸 LOST GUITAR</b>
+    <h2>Your music. Your space.</h2>
+    <p>Upload your MP3 files and keep your favorite music right here.</p>
+  </div>
 
-<div class="title"><h2>Your Music</h2><small id="count">0 SONGS</small></div>
-<label class="upload" for="files">＋ Upload MP3</label>
-<input id="files" type="file" accept="audio/*,.mp3">
-<div id="songs"></div>
+  <label class="upload">
+    ➕ Upload MP3
+    <input id="files" type="file" accept="audio/mpeg,.mp3,audio/*" multiple>
+  </label>
 
-<div class="title"><h2>Favorites</h2><small>♥</small></div>
-<div id="favs"></div>
+  <div class="section-title">
+    <h2>Recently Played</h2>
+    <small>HISTORY</small>
+  </div>
+
+  <div id="recent"></div>
+
+  <div class="section-title">
+    <h2>Your Music</h2>
+    <small id="count">0 SONGS</small>
+  </div>
+
+  <div id="songs"></div>
+
+  <div class="section-title">
+    <h2>Favorites</h2>
+    <small>❤️</small>
+  </div>
+
+  <div id="fav"></div>
+
 </section>
 
 
+<!-- SEARCH -->
 <section id="searchPage" class="page">
-<div class="logo">SEARCH</div>
-<input id="search" class="search redsearch" placeholder="Search songs...">
-<div id="results" class="empty">Play songs to get started :D</div>
+
+  <div class="logo">
+    <b>SEARCH</b>
+  </div>
+
+  <input
+    id="search"
+    class="search"
+    placeholder="Search songs..."
+    oninput="searchSongs(this.value)"
+  >
+
+  <div id="results" class="results">
+    <div class="empty">Type a song name to search.</div>
+  </div>
+
 </section>
 
 
+<!-- PROFILE -->
 <section id="profilePage" class="page">
-<div class="logo">PROFILE</div>
-<div class="banner" id="banner"></div>
-<div class="profile">
-<div class="avatar" id="avatar">🎸</div>
-<div class="user" id="showUser">Lost Guitar User</div>
-<div class="status">● Online</div>
-<div class="bio" id="showBio">Music lover 🎸</div>
 
-<input id="username" class="field" placeholder="Username">
-<textarea id="bio" class="field" placeholder="Your bio..."></textarea>
+  <div class="logo">
+    <b>PROFILE</b>
+  </div>
 
-<label class="upload" for="avatarFile">🖼️ Choose Profile Picture</label>
-<input id="avatarFile" type="file" accept="image/*">
+  <div class="profile-card">
 
-<label class="upload" for="bannerFile">🖼️ Choose Banner</label>
-<input id="bannerFile" type="file" accept="image/*">
+    <div id="banner" class="banner">
+      <div id="bannerPlaceholder"></div>
+    </div>
 
-<button class="btn" style="width:100%" onclick="saveProfile()">Save Profile</button>
-</div>
+    <div class="profile-info">
+
+      <div id="avatar" class="avatar">
+        🎸
+      </div>
+
+      <div class="user" id="showUser">
+        Lost Guitar User
+      </div>
+
+      <div class="status">
+        ● Listening
+      </div>
+
+      <hr>
+
+      <label>Username</label>
+      <input
+        id="username"
+        class="field"
+        placeholder="Your username"
+        maxlength="30"
+      >
+
+      <label>Bio</label>
+      <textarea
+        id="bio"
+        class="field"
+        placeholder="Tell people about yourself..."
+        maxlength="160"
+      ></textarea>
+
+      <div class="image-buttons">
+
+        <label>
+          🖼️ Change PFP
+          <input
+            id="avatarFile"
+            type="file"
+            accept="image/*"
+          >
+        </label>
+
+        <label>
+          🎨 Change Banner
+          <input
+            id="bannerFile"
+            type="file"
+            accept="image/*"
+          >
+        </label>
+
+      </div>
+
+      <button
+        class="profile-button"
+        onclick="saveProfile()"
+      >
+        Save Profile
+      </button>
+
+    </div>
+
+  </div>
+
 </section>
 
-</div>
 
-
+<!-- PLAYER -->
 <div id="player" class="player">
-<div class="top">
-<div class="cover">🎸</div>
-<div class="pinfo"><div class="name" id="pname">Nothing playing</div><div class="type">Lost Guitar</div></div>
-<button class="btn heart" id="pheart" onclick="favCurrent()">♡</button>
-</div>
-<input id="range" class="range" type="range" min="0" max="100" value="0">
-<div class="times"><span id="now">0:00</span><span id="total">0:00</span></div>
-<div class="controls">
-<button onclick="prev()">⏮</button>
-<button class="main" id="play" onclick="toggle()">▶</button>
-<button onclick="next()">⏭</button>
-</div>
+
+  <div id="playerTitle" class="playerTitle">
+    Nothing playing
+  </div>
+
+  <audio
+    id="audio"
+    controls
+    preload="metadata"
+  ></audio>
+
 </div>
 
 
-<div class="nav">
-<button id="nHome" class="on" onclick="go('home')"><span>⌂</span>Home</button>
-<button id="nSearch" onclick="go('search')"><span>⌕</span>Search</button>
-<button id="nProfile" onclick="go('profile')"><span>●</span>Profile</button>
-</div>
+<!-- NAVIGATION -->
+<nav class="nav">
+
+  <button
+    id="homeBtn"
+    class="active"
+    onclick="showPage('home')"
+  >
+    <span class="nav-icon">🏠</span>
+    Home
+  </button>
+
+  <button
+    id="searchBtn"
+    onclick="showPage('searchPage')"
+  >
+    <span class="nav-icon">🔎</span>
+    Search
+  </button>
+
+  <button
+    id="profileBtn"
+    onclick="showPage('profilePage')"
+  >
+    <span class="nav-icon">👤</span>
+    Profile
+  </button>
+
+</nav>
 
 
 <script>
-let songs=JSON.parse(localStorage.lgSongs||"[]"),
-recent=JSON.parse(localStorage.lgRecent||"[]"),
-favs=JSON.parse(localStorage.lgFavs||"[]"),
-audio=null,current=null;
 
-const $=id=>document.getElementById(id);
-const save=()=>{
- localStorage.lgSongs=JSON.stringify(songs);
- localStorage.lgRecent=JSON.stringify(recent);
- localStorage.lgFavs=JSON.stringify(favs);
-};
+let songs = [];
+let recent = [];
+let favs = [];
+let current = null;
 
-function greeting(){
- let h=new Date().getHours(),g=h<12?"Good morning":h<18?"Good afternoon":h<22?"Good evening":"Good night";
- $("greeting").textContent=g+(localStorage.lgUser?", "+localStorage.lgUser:"");
+
+/* ---------- STORAGE ---------- */
+
+function loadStorage(){
+
+  try{
+    songs = JSON.parse(localStorage.getItem("songs") || "[]");
+  }catch(e){
+    songs = [];
+  }
+
+  try{
+    recent = JSON.parse(localStorage.getItem("recent") || "[]");
+  }catch(e){
+    recent = [];
+  }
+
+  try{
+    favs = JSON.parse(localStorage.getItem("favs") || "[]");
+  }catch(e){
+    favs = [];
+  }
+
 }
 
-function go(page){
- document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));
- document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("on"));
- if(page=="home"){$("home").classList.add("on");$("nHome").classList.add("on")}
- if(page=="search"){$("searchPage").classList.add("on");$("nSearch").classList.add("on");$("search").focus()}
- if(page=="profile"){$("profilePage").classList.add("on");$("nProfile").classList.add("on");loadProfile()}
- scrollTo(0,0);
+
+/* ---------- SAVE ---------- */
+
+function saveData(){
+
+  try{
+    localStorage.setItem("songs",JSON.stringify(songs));
+    localStorage.setItem("recent",JSON.stringify(recent));
+    localStorage.setItem("favs",JSON.stringify(favs));
+  }catch(e){
+    console.log("Storage error:",e);
+  }
+
 }
 
-function card(s){
- let f=favs.includes(s.id);
- return `<div class="song"><div class="cover">🎸</div><div class="info"><div class="name">${s.name}</div><div class="type">MP3</div></div><button class="btn" onclick="playSong(${s.id})">▶</button><button class="btn heart ${f?"on":""}" onclick="favorite(${s.id})">${f?"♥":"♡"}</button></div>`;
-}
 
-function render(){
- $("count").textContent=songs.length+" SONG"+(songs.length==1?"":"S");
- $("songs").innerHTML=songs.length?songs.map(card).join(""):`<div class="empty">Upload your first song 🎸</div>`;
- let r=recent.map(id=>songs.find(s=>s.id==id)).filter(Boolean);
- $("recent").innerHTML=r.length?r.map(card).join(""):`<div class="empty">Songs you play will appear here.</div>`;
- let f=favs.map(id=>songs.find(s=>s.id==id)).filter(Boolean);
- $("favs").innerHTML=f.length?f.map(card).join(""):`<div class="empty">No favorites yet.</div>`;
- searchSongs($("search").value);
-}
+/* ---------- MP3 IMPORT ---------- */
 
-$("files").onchange=e=>{
- let file=e.target.files[0];
- if(!file)return;
- let r=new FileReader();
- r.onload=()=>{
-  songs.push({id:Date.now(),name:file.name.replace(/\.[^/.]+$/,""),data:r.result});
-  save();render();alert("Song added! 🎸");
- };
- r.readAsDataURL(file);
- e.target.value="";
-};
+document.getElementById("files").addEventListener("change",function(e){
+
+  const files = Array.from(e.target.files || []);
+
+  if(!files.length) return;
+
+  files.forEach(function(file){
+
+    if(!file.type.startsWith("audio/") &&
+       !file.name.toLowerCase().endsWith(".mp3")){
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(){
+
+      const song = {
+        id:"song_" + Date.now() + "_" + Math.random().toString(36).slice(2),
+        name:file.name.replace(/\.[^/.]+$/,""),
+        url:reader.result,
+        type:file.type || "audio/mpeg"
+      };
+
+      songs.push(song);
+
+      saveData();
+      render();
+    };
+
+    reader.readAsDataURL(file);
+
+  });
+
+  e.target.value="";
+
+});
+
+
+/* ---------- PLAY ---------- */
 
 function playSong(id){
- let s=songs.find(x=>x.id==id);if(!s)return;
- if(audio)audio.pause();
- current=id;audio=new Audio(s.data);
- $("pname").textContent=s.name;
- $("player").style.display="block";
- audio.onloadedmetadata=()=>{$("total").textContent=time(audio.duration)};
- audio.ontimeupdate=()=>{
-  $("range").value=audio.duration?audio.currentTime/audio.duration*100:0;
-  $("now").textContent=time(audio.currentTime);
- };
- audio.onended=()=>{$("play").textContent="▶"};
- audio.play().then(()=>{$("play").textContent="Ⅱ"}).catch(()=>alert("Couldn't play this song."));
- recent=[id,...recent.filter(x=>x!=id)].slice(0,10);
- save();render();
+
+  const song = songs.find(function(s){
+    return s.id === id;
+  });
+
+  if(!song) return;
+
+  current = id;
+
+  const audio = document.getElementById("audio");
+  const player = document.getElementById("player");
+  const title = document.getElementById("playerTitle");
+
+  title.textContent = song.name;
+
+  audio.src = song.url;
+
+  player.classList.add("show");
+
+  audio.play().catch(function(){
+    console.log("Playback needs user interaction.");
+  });
+
+  recent = recent.filter(function(x){
+    return x !== id;
+  });
+
+  recent.unshift(id);
+
+  recent = recent.slice(0,20);
+
+  saveData();
+  renderRecent();
+
 }
 
-function toggle(){
- if(!audio)return;
- if(audio.paused){audio.play();$("play").textContent="Ⅱ"}
- else{audio.pause();$("play").textContent="▶"}
+
+/* ---------- NEXT SONG ---------- */
+
+function nextSong(){
+
+  if(!songs.length) return;
+
+  let i = songs.findIndex(function(x){
+    return x.id === current;
+  });
+
+  if(i < 0){
+    playSong(songs[0].id);
+    return;
+  }
+
+  playSong(
+    songs[(i + 1) % songs.length].id
+  );
+
 }
 
-$("range").oninput=()=>{
- if(audio&&audio.duration)audio.currentTime=$("range").value/100*audio.duration;
-};
 
-function time(x){
- if(!isFinite(x))return"0:00";
- return Math.floor(x/60)+":"+String(Math.floor(x%60)).padStart(2,"0");
+/* ---------- PREVIOUS SONG ---------- */
+
+function previousSong(){
+
+  if(!songs.length) return;
+
+  let i = songs.findIndex(function(x){
+    return x.id === current;
+  });
+
+  if(i < 0){
+    playSong(songs[0].id);
+    return;
+  }
+
+  i = i - 1;
+
+  if(i < 0){
+    i = songs.length - 1;
+  }
+
+  playSong(songs[i].id);
+
 }
 
-function prev(){
- if(!current)return;
- let i=songs.findIndex(x=>x.id==current);
- playSong(songs[(i-1+songs.length)%songs.length].id);
-}
 
-function next(){
- if(!current)return;
- let i=songs.findIndex(x=>x.id==current);
- playSong(songs[(i+1)%songs.length].id);
-}
+/* ---------- FAVORITES ---------- */
 
 function favorite(id){
- favs=favs.includes(id)?favs.filter(x=>x!=id):[...favs,id];
- save();render();
+
+  if(favs.includes(id)){
+    favs = favs.filter(function(x){
+      return x !== id;
+    });
+  }else{
+    favs.push(id);
+  }
+
+  saveData();
+  render();
+
 }
 
-function favCurrent(){if(current)favorite(current)}
+
+/* ---------- SONG CARD ---------- */
+
+function songCard(song){
+
+  const isFav = favs.includes(song.id);
+
+  return `
+    <div class="song">
+
+      <div class="cover">
+        🎵
+      </div>
+
+      <div class="info">
+
+        <div class="name">
+          ${escapeHtml(song.name)}
+        </div>
+
+        <div class="small">
+          MP3
+        </div>
+
+      </div>
+
+      <button onclick="playSong('${song.id}')">
+        ▶
+      </button>
+
+      <button
+        onclick="favorite('${song.id}')"
+        style="background:${isFav ? '#f01825' : '#292929'}"
+      >
+        ${isFav ? '❤️' : '♡'}
+      </button>
+
+    </div>
+  `;
+
+}
+
+
+/* ---------- RENDER SONGS ---------- */
+
+function render(){
+
+  const box = document.getElementById("songs");
+
+  document.getElementById("count").textContent =
+    songs.length + (songs.length === 1 ? " SONG" : " SONGS");
+
+  if(!songs.length){
+
+    box.innerHTML =
+      '<div class="empty">No MP3s yet. Upload one! 🎵</div>';
+
+  }else{
+
+    box.innerHTML =
+      songs.map(songCard).join("");
+
+  }
+
+  renderFavorites();
+  renderRecent();
+
+}
+
+
+/* ---------- FAVORITES RENDER ---------- */
+
+function renderFavorites(){
+
+  const box = document.getElementById("fav");
+
+  const favoriteSongs = songs.filter(function(song){
+    return favs.includes(song.id);
+  });
+
+  if(!favoriteSongs.length){
+
+    box.innerHTML =
+      '<div class="empty">No favorites yet ❤️</div>';
+
+    return;
+  }
+
+  box.innerHTML =
+    favoriteSongs.map(songCard).join("");
+
+}
+
+
+/* ---------- RECENT RENDER ---------- */
+
+function renderRecent(){
+
+  const box = document.getElementById("recent");
+
+  const recentSongs = recent
+    .map(function(id){
+      return songs.find(function(song){
+        return song.id === id;
+      });
+    })
+    .filter(Boolean);
+
+  if(!recentSongs.length){
+
+    box.innerHTML =
+      '<div class="empty">Nothing played yet.</div>';
+
+    return;
+  }
+
+  box.innerHTML =
+    recentSongs.slice(0,8).map(songCard).join("");
+
+}
+
+
+/* ---------- SEARCH ---------- */
 
 function searchSongs(q){
- q=q.toLowerCase().trim();
- $("results").innerHTML=q?songs.filter(s=>s.name.toLowerCase().includes(q)).map(card).join("")||`<div class="empty">No songs found.</div>`:`<div class="empty">Play songs to get started :D</div>`;
+
+  q = (q || "").toLowerCase().trim();
+
+  const results = document.getElementById("results");
+
+  if(!results) return;
+
+  if(!q){
+
+    results.innerHTML =
+      '<div class="empty">Type a song name to search.</div>';
+
+    return;
+  }
+
+  const found = songs.filter(function(song){
+    return song.name.toLowerCase().includes(q);
+  });
+
+  if(!found.length){
+
+    results.innerHTML =
+      '<div class="empty">No songs found.</div>';
+
+    return;
+  }
+
+  results.innerHTML =
+    found.map(songCard).join("");
+
 }
 
-$("search").oninput=e=>searchSongs(e.target.value);
+
+/* ---------- PROFILE ---------- */
 
 function saveProfile(){
- localStorage.lgUser=$("username").value.trim();
- localStorage.lgBio=$("bio").value.trim();
- loadProfile();greeting();alert("Profile saved! 🎸");
+
+  const username =
+    document.getElementById("username").value.trim();
+
+  const bio =
+    document.getElementById("bio").value.trim();
+
+  localStorage.setItem(
+    "lgUser",
+    username || "Lost Guitar User"
+  );
+
+  localStorage.setItem(
+    "lgBio",
+    bio
+  );
+
+  loadProfile();
+
+  alert("Profile saved! 🎸");
+
 }
+
 
 function loadProfile(){
- let u=localStorage.lgUser||"Lost Guitar User",b=localStorage.lgBio||"Music lover 🎸";
- $("username").value=localStorage.lgUser||"";
- $("bio").value=localStorage.lgBio||"";
- $("showUser").textContent=u;
- $("showBio").textContent=b;
- if(localStorage.lgAvatar)$("avatar").innerHTML=`<img src="${localStorage.lgAvatar}">`;
- if(localStorage.lgBanner)$("banner").style.background=`url("${localStorage.lgBanner}") center/cover`;
+
+  const username =
+    localStorage.getItem("lgUser") ||
+    "Lost Guitar User";
+
+  const bio =
+    localStorage.getItem("lgBio") || "";
+
+  document.getElementById("username").value =
+    username;
+
+  document.getElementById("bio").value =
+    bio;
+
+  document.getElementById("showUser").textContent =
+    username;
+
+  const avatar =
+    localStorage.getItem("lgAvatar");
+
+  const banner =
+    localStorage.getItem("lgBanner");
+
+
+  if(avatar){
+
+    document.getElementById("avatar").innerHTML =
+      '<img src="' + avatar + '" alt="Profile picture">';
+
+  }else{
+
+    document.getElementById("avatar").innerHTML =
+      '🎸';
+
+  }
+
+
+  if(banner){
+
+    document.getElementById("banner").style.backgroundImage =
+      'url("' + banner + '")';
+
+    document.getElementById("banner").style.backgroundSize =
+      "cover";
+
+    document.getElementById("banner").style.backgroundPosition =
+      "center";
+
+  }else{
+
+    document.getElementById("banner").style.backgroundImage =
+      "linear-gradient(135deg,#500a10,#160708)";
+
+  }
+
 }
+
+
+/* ---------- IMAGE UPLOADS ---------- */
 
 function imageSave(input,key,target){
- input.onchange=e=>{
-  let f=e.target.files[0];if(!f)return;
-  let r=new FileReader();
-  r.onload=()=>{localStorage[key]=r.result;target()};
-  r.readAsDataURL(f);
- };
+
+  input.addEventListener("change",function(e){
+
+    const file =
+      e.target.files &&
+      e.target.files[0];
+
+    if(!file) return;
+
+    if(!file.type.startsWith("image/")){
+      alert("Please choose an image.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(){
+
+      try{
+
+        localStorage.setItem(
+          key,
+          reader.result
+        );
+
+        loadProfile();
+
+      }catch(err){
+
+        alert(
+          "That image is too large. Try a smaller image."
+        );
+
+      }
+
+    };
+
+    reader.readAsDataURL(file);
+
+  });
+
 }
 
-imageSave($("avatarFile"),"lgAvatar",loadProfile);
-imageSave($("bannerFile"),"lgBanner",loadProfile);
 
+imageSave(
+  document.getElementById("avatarFile"),
+  "lgAvatar",
+  loadProfile
+);
+
+imageSave(
+  document.getElementById("bannerFile"),
+  "lgBanner",
+  loadProfile
+);
+
+
+/* ---------- NAVIGATION ---------- */
+
+function showPage(page){
+
+  document
+    .querySelectorAll(".page")
+    .forEach(function(x){
+      x.classList.remove("active");
+    });
+
+  document
+    .getElementById(page)
+    .classList.add("active");
+
+
+  document
+    .querySelectorAll(".nav button")
+    .forEach(function(x){
+      x.classList.remove("active");
+    });
+
+
+  if(page === "home"){
+
+    document
+      .getElementById("homeBtn")
+      .classList.add("active");
+
+  }
+
+  if(page === "searchPage"){
+
+    document
+      .getElementById("searchBtn")
+      .classList.add("active");
+
+    document
+      .getElementById("search")
+      .focus();
+
+  }
+
+  if(page === "profilePage"){
+
+    document
+      .getElementById("profileBtn")
+      .classList.add("active");
+
+    loadProfile();
+
+  }
+
+}
+
+
+/* ---------- GREETING ---------- */
+
+function greeting(){
+
+  const hour = new Date().getHours();
+
+  let text = "WELCOME";
+
+  if(hour < 12){
+    text = "GOOD MORNING";
+  }else if(hour < 18){
+    text = "GOOD AFTERNOON";
+  }else{
+    text = "GOOD EVENING";
+  }
+
+  const user =
+    localStorage.getItem("lgUser") ||
+    "";
+
+  document.getElementById("greeting").textContent =
+    user ? text + ", " + user : text;
+
+}
+
+
+/* ---------- HTML SAFETY ---------- */
+
+function escapeHtml(x){
+
+  return String(x)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");q
+
+}
+
+
+/* ---------- AUDIO EVENTS ---------- */
+
+document.getElementById("audio").addEventListener(
+  "ended",
+  function(){
+    nextSong();
+  }
+);
+
+
+/* ---------- START ---------- */
+
+loadStorage();
 loadProfile();
 greeting();
 render();
+
 </script>
+
 </body>
-</html>
-After you paste it: save/commit the file, then run your GitHub Action and download the new APK.
-🔥 IMPORTANT: If the MP3 button still doesn't open after this version, don't paste another version yet. Tell me what happens when you tap Upload MP3, because then we'll pinpoint the Android WebView issue instead of making the HTML bigger.
+ </html>
