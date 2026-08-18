@@ -1,1 +1,19 @@
-
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lost Guitar</title>
+<style>body{margin:0;background:#080808;color:#fff;font-family:Arial}header{padding:22px 18px;background:#080808}.brand{font-size:28px;font-weight:800;color:#e50914}.greet{font-size:20px;margin-top:8px}main{padding:0 18px 80px}.search{width:100%;padding:14px;box-sizing:border-box;background:#171717;color:#fff;border:1px solid #333;border-radius:12px;font-size:16px}.card{background:#121212;border:1px solid #292929;border-radius:14px;padding:14px;margin:10px 0}.row{display:flex;gap:10px;align-items:center}.cover{width:52px;height:52px;border-radius:9px;background:#e50914;display:grid;place-items:center}.grow{flex:1}.small{color:#aaa;font-size:13px}button{background:#e50914;color:#fff;border:0;border-radius:9px;padding:10px 13px;font-weight:bold}.dark{background:#292929}.bottom{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #333;display:flex;justify-content:space-around;padding:8px}.bottom button{background:transparent;color:#ddd}</style></head>
+<body><header><div class="brand">LOST GUITAR</div><div id="greet" class="greet"></div></header><main>
+<input id="search" class="search" placeholder="Search your music..." oninput="render()">
+<h2>Creator's Picks</h2><div class="card"><b>Late Night Guitar</b><div class="small">A starter playlist</div></div>
+<h2>Your Music</h2><button onclick="Android.pickMp3()">＋ Upload MP3</button><div id="songs"></div>
+<h2>Profile</h2><div class="card"><input id="name" class="search" placeholder="Your name"><button onclick="save()">Save</button></div>
+</main><nav class="bottom"><button onclick="scrollTo(0,0)">Home</button><button onclick="document.getElementById('search').focus()">Search</button><button onclick="scrollTo(0,document.body.scrollHeight)">Profile</button></nav>
+<script>
+let songs=JSON.parse(localStorage.songs||'[]');
+function greet(){let h=new Date().getHours(),p=h<12?'Good morning':h<18?'Good afternoon':'Good evening';document.getElementById('greet').textContent=p+' - '+(localStorage.name||'there')}
+function save(){localStorage.name=document.getElementById('name').value.trim()||'there';greet()}
+window.addImportedMp3=function(u){let n=decodeURIComponent(u.split('/').pop()||'Imported MP3').replace(/\.[^.]+$/,'');songs.push({n:n,u:u,f:0});localStorage.songs=JSON.stringify(songs);render()}
+function play(i){new Audio(songs[i].u).play().catch(()=>alert('Could not play this MP3.'))}
+function fav(i){songs[i].f=!songs[i].f;localStorage.songs=JSON.stringify(songs);render()}
+function render(){let q=document.getElementById('search').value.toLowerCase(),box=document.getElementById('songs');box.innerHTML='';let a=songs.map((s,i)=>[s,i]).filter(x=>x[0].n.toLowerCase().includes(q));if(!a.length){box.innerHTML='<div class="card small">No MP3s yet.</div>';return}a.forEach(x=>{let d=document.createElement('div');d.className='card';d.innerHTML='<div class="row"><div class="cover">♪</div><div class="grow"><b>'+esc(x[0].n)+'</b><div class="small">MP3</div></div><button onclick="play('+x[1]+')">Play</button><button class="dark" onclick="fav('+x[1]+')">'+(x[0].f?'♥':'♡')+'</button></div>';box.appendChild(d)})}
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.getElementById('name').value=localStorage.name||'';greet();render();
+</script></body></html>
