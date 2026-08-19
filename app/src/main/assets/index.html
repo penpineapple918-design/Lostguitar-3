@@ -2,1186 +2,800 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lost Guitar</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 
-html, body {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
+body{
+  font-family:Arial,sans-serif;
+  color:white;
+  background:#120506;
+  min-height:100vh;
+  overflow:hidden;
 }
 
-body {
-    background: #0b0b0b;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-    overflow-x: hidden;
+/* Background */
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    radial-gradient(circle at 20% 20%,#65121d 0,transparent 35%),
+    radial-gradient(circle at 80% 70%,#3b0b13 0,transparent 40%),
+    linear-gradient(145deg,#080808,#21070b 55%,#090909);
 }
 
-/* FAINT GUITARS */
-
-.guitar {
-    position: fixed;
-    z-index: -1;
-    opacity: 0.035;
-    pointer-events: none;
-    user-select: none;
-    font-size: 180px;
+body:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  opacity:.16;
+  background:
+    repeating-radial-gradient(
+      ellipse at center,
+      transparent 0 70px,
+      #b52b3b 72px 73px,
+      transparent 75px 120px
+    );
 }
 
-.guitar.one {
-    top: 80px;
-    left: -45px;
-    transform: rotate(-25deg);
+/* App */
+.app{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
 }
 
-.guitar.two {
-    top: 430px;
-    right: -55px;
-    transform: rotate(25deg);
+.content{
+  flex:1;
+  overflow-y:auto;
+  padding:22px 18px 100px;
 }
 
-.guitar.three {
-    bottom: 40px;
-    left: 20%;
-    transform: rotate(-10deg);
+/* Pages */
+.page{
+  display:none;
 }
 
-/* APP */
-
-.app {
-    width: 100%;
-    max-width: 900px;
-    margin: auto;
-    min-height: 100vh;
-    padding-bottom: 100px;
+.page.active{
+  display:block;
 }
 
-/* PROFILE / DISCORD BANNER */
-
-.profile-card {
-    margin: 15px;
-    background: #151515;
-    border: 1px solid #444;
-    border-radius: 25px;
-    overflow: visible;
+/* Home */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
 }
 
-.banner {
-    height: 190px;
-    width: 100%;
-    border-radius: 25px 25px 0 0;
-    background:
-        linear-gradient(
-            rgba(70, 0, 0, 0.25),
-            rgba(70, 0, 0, 0.25)
-        ),
-        #321414;
-    background-size: cover;
-    background-position: center;
-    position: relative;
+.greeting{
+  font-size:26px;
+  font-weight:bold;
 }
 
-.profile-info {
-    position: relative;
-    padding: 0 20px 22px;
+.settings{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  border:2px solid #ff303f;
+  background:#b91425;
+  color:white;
+  font-size:21px;
 }
 
-/* DISCORD-STYLE PFP */
-
-.pfp {
-    width: 105px;
-    height: 105px;
-    position: relative;
-    margin-top: -53px;
-    border-radius: 50%;
-    border: 6px solid #151515;
-    background: #292929;
-    object-fit: cover;
-    object-position: center;
-    display: block;
+/* Cards */
+.section{
+  margin-bottom:22px;
 }
 
-.username {
-    margin: 8px 0 4px;
-    font-size: 25px;
-    font-weight: bold;
+.section h2{
+  font-size:18px;
+  margin-bottom:10px;
 }
 
-.bio {
-    margin: 0 0 15px;
-    color: #bdbdbd;
+.card{
+  background:rgba(25,8,11,.88);
+  border:1px solid #777;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:10px;
 }
 
-/* RED BUTTONS */
-
-.button-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+/* Buttons */
+.btn{
+  border:2px solid #777;
+  background:#72111d;
+  color:white;
+  border-radius:14px;
+  padding:11px 16px;
+  font-size:15px;
 }
 
-.red-button {
-    min-height: 43px;
-    padding: 10px 20px;
-    background: #651b1b;
-    color: white;
-    border: 2px solid #777;
-    border-radius: 18px;
-    font-weight: bold;
-    text-align: center;
-    transition: 0.15s ease;
+.btn:active,
+.btn.selected{
+  border-color:white;
 }
 
-.red-button:hover {
-    background: #7b2222;
+/* Player */
+.player-box{
+  background:rgba(20,6,9,.9);
+  border:1px solid #777;
+  border-radius:22px;
+  padding:20px;
+  text-align:center;
 }
 
-.red-button:active {
-    transform: scale(0.97);
+.player-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
 }
 
-/* NAVIGATION */
-
-.nav {
-    margin: 15px;
-    display: flex;
-    gap: 8px;
-    padding: 8px;
-    background: #151515;
-    border: 1px solid #444;
-    border-radius: 20px;
+.record{
+  width:190px;
+  height:190px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,#777 0 7%,#111 8% 12%,#222 13% 20%,#090909 21% 100%);
+  border:5px solid #333;
 }
 
-.nav-button {
-    flex: 1;
-    background: #242424;
-    color: white;
-    border: 1px solid #666;
-    border-radius: 15px;
-    padding: 11px;
+.song-info{
+  margin-top:18px;
 }
 
-.nav-button.active {
-    background: #651b1b;
+.song-info h2{
+  margin-bottom:5px;
 }
 
-/* SECTIONS */
-
-.section {
-    margin: 15px;
+/* Profile */
+.banner{
+  height:150px;
+  border-radius:20px;
+  border:1px solid #777;
+  background:
+    linear-gradient(135deg,#59101a,#170608);
+  position:relative;
 }
 
-.card {
-    background: #151515;
-    border: 1px solid #444;
-    border-radius: 24px;
-    padding: 20px;
-    margin-bottom: 15px;
+.pfp{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:#222;
+  border:5px solid #120506;
+  position:absolute;
+  left:20px;
+  bottom:-45px;
 }
 
-.hidden {
-    display: none !important;
+.profile-info{
+  padding:55px 10px 15px;
 }
 
-/* MUSIC */
-
-.music-header {
-    margin-bottom: 15px;
+/* Bottom navigation */
+.nav{
+  position:fixed;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  height:68px;
+  display:flex;
+  gap:8px;
+  padding:8px;
+  background:rgba(15,5,7,.96);
+  border:1px solid #555;
+  border-radius:20px;
 }
 
-.music-header h2 {
-    margin: 0 0 5px;
+.nav button{
+  flex:1;
+  border:2px solid #777;
+  border-radius:14px;
+  background:#5d1019;
+  color:white;
+  font-size:14px;
 }
 
-.music-header p {
-    margin: 0;
-    color: #999;
+.nav button.active{
+  border-color:white;
+  background:#861522;
 }
 
-.upload-mp3 {
-    width: 100%;
-    background: #651b1b;
-    color: white;
-    border: 2px solid #777;
-    border-radius: 20px;
-    padding: 15px;
-    font-weight: bold;
+.nav-icon{
+  display:block;
+  font-size:22px;
+  line-height:22px;
+  margin-bottom:2px;
 }
 
-.song-list {
-    margin-top: 15px;
-}
+/* Small screens */
+@media(max-width:360px){
+  .record{
+    width:155px;
+    height:155px;
+  }
 
-.song {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background: #222;
-    border: 1px solid #555;
-    border-radius: 18px;
-    margin-top: 10px;
-}
-
-.song-info {
-    flex: 1;
-}
-
-.song-title {
-    font-weight: bold;
-}
-
-.song-artist {
-    color: #999;
-    font-size: 13px;
-}
-
-.song-play {
-    background: #651b1b;
-    color: white;
-    border: 1px solid #777;
-    border-radius: 14px;
-    padding: 8px 13px;
-}
-
-/* FULL PLAYER */
-
-.player {
-    background: #651b1b;
-    border: 2px solid #777;
-    border-radius: 28px;
-    padding: 25px;
-    text-align: center;
-}
-
-.record {
-    width: 235px;
-    height: 235px;
-    margin: 5px auto 25px;
-    border-radius: 50%;
-    background:
-        repeating-radial-gradient(
-            circle,
-            #090909 0px,
-            #171717 3px,
-            #090909 6px
-        );
-    box-shadow: 0 0 25px rgba(0,0,0,0.7);
-    position: relative;
-}
-
-.record::after {
-    content: "";
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #111;
-    border: 3px solid #888;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.record-art {
-    position: absolute;
-    width: 105px;
-    height: 105px;
-    border-radius: 50%;
-    object-fit: cover;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.record.spinning {
-    animation: spin 3s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.progress {
-    width: 100%;
-}
-
-.player-controls {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 15px;
-}
-
-.player-control {
-    background: #222;
-    color: white;
-    border: 1px solid #888;
-    border-radius: 15px;
-    padding: 12px 18px;
-}
-
-/* MINI PLAYER */
-
-.mini-player {
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #651b1b;
-    border: 2px solid #777;
-    border-radius: 22px;
-    padding: 11px 14px;
-}
-
-.mini-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.mini-title {
-    font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.mini-time {
-    color: #ccc;
-    font-size: 12px;
-}
-
-.mini-play {
-    background: #222;
-    color: white;
-    border: 1px solid #888;
-    border-radius: 14px;
-    padding: 9px 14px;
-}
-
-/* PROFILE SETTINGS */
-
-.input {
-    width: 100%;
-    background: #222;
-    color: white;
-    border: 1px solid #666;
-    border-radius: 15px;
-    padding: 12px;
-    margin-bottom: 12px;
-}
-
-label {
-    display: block;
-    color: #bbb;
-    margin-bottom: 6px;
-}
-
-/* MOBILE */
-
-@media (max-width: 600px) {
-
-    .banner {
-        height: 160px;
-    }
-
-    .pfp {
-        width: 95px;
-        height: 95px;
-    }
-
-    .record {
-        width: 205px;
-        height: 205px;
-    }
-
-    .record-art {
-        width: 92px;
-        height: 92px;
-    }
+  .greeting{
+    font-size:22px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- FAINT GUITARS -->
-<div class="guitar one">🎸</div>
-<div class="guitar two">🎸</div>
-<div class="guitar three">🎸</div>
-
 <div class="app">
 
-    <!-- PROFILE HEADER -->
+<main class="content">
 
-    <div class="profile-card">
+<!-- HOME -->
+<section id="home" class="page active">
 
-        <div id="banner" class="banner"></div>
-
-        <div class="profile-info">
-
-            <img id="pfp"
-                 class="pfp"
-                 alt="Profile picture">
-
-            <div id="username" class="username">
-                Good morning
-            </div>
-
-            <div id="bio" class="bio">
-                Welcome to Lost Guitar.
-            </div>
-
-            <div class="button-row">
-
-                <button class="red-button"
-                        onclick="choosePfp()">
-                    Upload PFP
-                </button>
-
-                <button class="red-button"
-                        onclick="chooseBanner()">
-                    Upload Banner
-                </button>
-
-            </div>
-
-        </div>
+  <div class="header">
+    <div class="greeting" id="greeting">
+      Good afternoon
     </div>
 
-    <!-- FILE INPUTS -->
+    <button class="settings" aria-label="Settings">⚙</button>
+  </div>
 
-    <input id="pfpInput"
-           type="file"
-           accept="image/*"
-           hidden>
+  <div class="section">
+    <h2>Creator's Picks</h2>
+    <div class="card">
+      Your featured music will appear here.
+    </div>
+  </div>
 
-    <input id="bannerInput"
-           type="file"
-           accept="image/*"
-           hidden>
+  <div class="section">
+    <h2>Recently Played</h2>
+    <div class="card">
+      No recently played songs.
+    </div>
+  </div>
 
-    <input id="mp3Input"
-           type="file"
-           accept="audio/*"
-           hidden>
+  <div class="section">
+    <h2>Playlists</h2>
+    <button class="btn">+ Create Playlist</button>
+  </div>
+
+</section>
 
 
-    <!-- NAVIGATION -->
+<!-- PLAYER -->
+<section id="player" class="page">
 
-    <div class="nav">
+  <div class="section">
+    <h1>Player</h1>
+  </div>
 
-        <button id="musicNav"
-                class="nav-button active"
-                onclick="openTab('music')">
-            Music
-        </button>
+  <div class="player-box">
 
-        <button id="playerNav"
-                class="nav-button"
-                onclick="openTab('player')">
-            Player
-        </button>
+    <div class="player-row">
 
-        <button id="profileNav"
-                class="nav-button"
-                onclick="openTab('profile')">
-            Profile
-        </button>
+      <div class="record"></div>
+
+      <button class="btn">
+        Upload Song
+      </button>
 
     </div>
 
-
-    <!-- MUSIC -->
-
-    <div id="musicTab" class="section">
-
-        <div class="card">
-
-            <div class="music-header">
-
-                <h2>Music</h2>
-
-                <p>
-                    Upload your music to Lost Guitar.
-                </p>
-
-            </div>
-
-            <button class="upload-mp3"
-                    onclick="chooseMp3()">
-                Upload MP3
-            </button>
-
-            <div id="songList"
-                 class="song-list">
-            </div>
-
-        </div>
-
+    <div class="song-info">
+      <h2>No Song Playing</h2>
+      <p>Select a song to start listening.</p>
     </div>
 
+    <br>
 
-    <!-- PLAYER -->
+    <button class="btn">▶ Play</button>
 
-    <div id="playerTab"
-         class="section hidden">
+  </div>
 
-        <div class="player">
-
-            <div id="record"
-                 class="record">
-
-                <img id="recordArt"
-                     class="record-art"
-                     alt="Album art">
-
-            </div>
-
-            <h2 id="playerTitle">
-                No song playing
-            </h2>
-
-            <p id="playerArtist">
-                Unknown Artist
-            </p>
-
-            <input id="progress"
-                   class="progress"
-                   type="range"
-                   min="0"
-                   max="100"
-                   value="0">
-
-            <div>
-                <span id="currentTime">0:00</span>
-                /
-                <span id="remainingTime">0:00</span>
-            </div>
-
-            <div class="player-controls">
-
-                <button class="player-control"
-                        onclick="previousSong()">
-                    ◀
-                </button>
-
-                <button id="playButton"
-                        class="player-control"
-                        onclick="togglePlay()">
-                    ▶
-                </button>
-
-                <button class="player-control"
-                        onclick="nextSong()">
-                    ▶
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
+</section>
 
 
-    <!-- PROFILE -->
+<!-- PROFILE -->
+<section id="profile" class="page">
 
-    <div id="profileTab"
-         class="section hidden">
+  <div class="banner">
+    <div class="pfp"></div>
+  </div>
 
-        <div class="card">
+  <div class="profile-info">
 
-            <h2>Profile Settings</h2>
+    <h1>Your Profile</h1>
 
-            <label>Username</label>
+    <p style="margin:8px 0 18px;">
+      Your username
+    </p>
 
-            <input id="usernameInput"
-                   class="input"
-                   placeholder="Username">
-
-            <label>Bio</label>
-
-            <input id="bioInput"
-                   class="input"
-                   placeholder="Bio">
-
-            <button class="red-button"
-                    onclick="saveChanges()">
-                Save Changes
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- MINI PLAYER -->
-
-<div id="miniPlayer"
-     class="mini-player hidden"
-     onclick="openFullPlayer()">
-
-    <div class="mini-info">
-
-        <div id="miniTitle"
-             class="mini-title">
-            No song playing
-        </div>
-
-        <div id="miniTime"
-             class="mini-time">
-            0:00 / -0:00
-        </div>
-
-    </div>
-
-    <button id="miniPlay"
-            class="mini-play"
-            onclick="event.stopPropagation(); togglePlay()">
-        ▶
+    <button class="btn">
+      Upload Profile Picture
     </button>
 
+    <br><br>
+
+    <button class="btn">
+      Upload Banner
+    </button>
+
+    <br><br>
+
+    <button class="btn">
+      Save Changes
+    </button>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<!-- BOTTOM NAV -->
+<nav class="nav">
+
+  <button class="active" onclick="showPage('home',this)">
+    <span class="nav-icon">⌂</span>
+    Home
+  </button>
+
+  <button onclick="showPage('player',this)">
+    <span class="nav-icon">▶</span>
+    Play
+  </button>
+
+  <button onclick="showPage('profile',this)">
+    <span class="nav-icon">●</span>
+    Profile
+  </button>
+
+</nav>
+
 </div>
-
-
-<audio id="audio"></audio>
 
 
 <script>
+function showPage(id,button){
 
-/* =========================
-   ELEMENTS
-========================= */
+  document.querySelectorAll('.page')
+    .forEach(p=>p.classList.remove('active'));
 
-const audio =
-    document.getElementById("audio");
+  document.getElementById(id)
+    .classList.add('active');
 
-const pfpInput =
-    document.getElementById("pfpInput");
+  document.querySelectorAll('.nav button')
+    .forEach(b=>b.classList.remove('active'));
 
-const bannerInput =
-    document.getElementById("bannerInput");
-
-const mp3Input =
-    document.getElementById("mp3Input");
-
-const pfp =
-    document.getElementById("pfp");
-
-const banner =
-    document.getElementById("banner");
-
-const record =
-    document.getElementById("record");
-
-const recordArt =
-    document.getElementById("recordArt");
-
-let songs = [];
-let currentSong = -1;
-
-
-/* =========================
-   GREETING
-========================= */
-
-function getGreeting(name) {
-
-    const hour = new Date().getHours();
-
-    let greeting;
-
-    if (hour >= 5 && hour < 12) {
-        greeting = "Good morning";
-    } else if (hour >= 12 && hour < 17) {
-        greeting = "Good afternoon";
-    } else if (hour >= 17 && hour < 22) {
-        greeting = "Good evening";
-    } else {
-        greeting = "Good night";
-    }
-
-    if (name && name.trim()) {
-        return greeting + " " + name.trim();
-    }
-
-    return greeting;
+  button.classList.add('active');
 }
 
+/* Greeting */
+const hour=new Date().getHours();
 
-/* =========================
-   PFP
-========================= */
+let greeting="Good night";
 
-function choosePfp() {
-    pfpInput.click();
+if(hour>=5 && hour<12){
+  greeting="Good morning";
+}else if(hour>=12 && hour<17){
+  greeting="Good afternoon";
+}else if(hour>=17 && hour<21){
+  greeting="Good evening";
 }
 
-pfpInput.addEventListener("change", function() {
+document.getElementById("greeting").textContent=greeting;
+</script>
 
-    const file = this.files[0];
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lost Guitar</title>
 
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-        alert("Please choose an image.");
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function(event) {
-
-        const image = event.target.result;
-
-        pfp.src = image;
-        recordArt.src = image;
-
-        localStorage.setItem(
-            "lostguitar_pfp",
-            image
-        );
-    };
-
-    reader.readAsDataURL(file);
-});
-
-
-/* =========================
-   BANNER
-========================= */
-
-function chooseBanner() {
-    bannerInput.click();
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 
-bannerInput.addEventListener("change", function() {
-
-    const file = this.files[0];
-
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-        alert("Please choose an image.");
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function(event) {
-
-        const image = event.target.result;
-
-        banner.style.backgroundImage =
-            "url('" + image + "')";
-
-        localStorage.setItem(
-            "lostguitar_banner",
-            image
-        );
-    };
-
-    reader.readAsDataURL(file);
-});
-
-
-/* =========================
-   MP3
-========================= */
-
-function chooseMp3() {
-
-    if (
-        typeof Android !== "undefined" &&
-        Android.pickMp3
-    ) {
-        Android.pickMp3();
-        return;
-    }
-
-    mp3Input.click();
+body{
+  font-family:Arial,sans-serif;
+  color:white;
+  background:#120506;
+  min-height:100vh;
+  overflow:hidden;
 }
 
-mp3Input.addEventListener("change", function() {
-
-    const file = this.files[0];
-
-    if (!file) return;
-
-    const url =
-        URL.createObjectURL(file);
-
-    songs.push({
-        title: file.name.replace(
-            /\.[^/.]+$/,
-            ""
-        ),
-        artist: "Unknown Artist",
-        url: url,
-        art: localStorage.getItem(
-            "lostguitar_pfp"
-        ) || ""
-    });
-
-    renderSongs();
-
-    playSong(songs.length - 1);
-});
-
-
-/* Android MP3 bridge */
-
-window.addImportedMp3 = function(uri) {
-
-    if (!uri) return;
-
-    songs.push({
-        title: "Imported Song",
-        artist: "Unknown Artist",
-        url: uri,
-        art: localStorage.getItem(
-            "lostguitar_pfp"
-        ) || ""
-    });
-
-    renderSongs();
-
-    playSong(songs.length - 1);
-};
-
-
-/* =========================
-   SONG LIST
-========================= */
-
-function renderSongs() {
-
-    const list =
-        document.getElementById("songList");
-
-    list.innerHTML = "";
-
-    songs.forEach(function(song, index) {
-
-        const item =
-            document.createElement("div");
-
-        item.className = "song";
-
-        const info =
-            document.createElement("div");
-
-        info.className = "song-info";
-
-        info.innerHTML =
-            "<div class='song-title'>" +
-            escapeHtml(song.title) +
-            "</div>" +
-            "<div class='song-artist'>" +
-            escapeHtml(song.artist) +
-            "</div>";
-
-        const play =
-            document.createElement("button");
-
-        play.className = "song-play";
-        play.textContent = "Play";
-
-        play.onclick = function() {
-            playSong(index);
-        };
-
-        item.appendChild(info);
-        item.appendChild(play);
-
-        list.appendChild(item);
-    });
+/* Background */
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    radial-gradient(circle at 20% 20%,#65121d 0,transparent 35%),
+    radial-gradient(circle at 80% 70%,#3b0b13 0,transparent 40%),
+    linear-gradient(145deg,#080808,#21070b 55%,#090909);
 }
 
-
-/* =========================
-   PLAYER
-========================= */
-
-function playSong(index) {
-
-    const song = songs[index];
-
-    if (!song) return;
-
-    currentSong = index;
-
-    audio.src = song.url;
-
-    document.getElementById(
-        "playerTitle"
-    ).textContent = song.title;
-
-    document.getElementById(
-        "playerArtist"
-    ).textContent = song.artist;
-
-    document.getElementById(
-        "miniTitle"
-    ).textContent = song.title;
-
-    recordArt.src = song.art || "";
-
-    document.getElementById(
-        "miniPlayer"
-    ).classList.remove("hidden");
-
-    audio.play().catch(function() {});
-}
-
-
-function togglePlay() {
-
-    if (!audio.src) return;
-
-    if (audio.paused) {
-        audio.play().catch(function() {});
-    } else {
-        audio.pause();
-    }
-}
-
-
-audio.addEventListener("play", updatePlayer);
-audio.addEventListener("pause", updatePlayer);
-
-function updatePlayer() {
-
-    const playing = !audio.paused;
-
-    /*
-     * The record spins only when
-     * the full Player tab is visible.
-     */
-
-    const playerVisible =
-        !document.getElementById(
-            "playerTab"
-        ).classList.contains("hidden");
-
-    record.classList.toggle(
-        "spinning",
-        playing && playerVisible
+body:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  opacity:.16;
+  background:
+    repeating-radial-gradient(
+      ellipse at center,
+      transparent 0 70px,
+      #b52b3b 72px 73px,
+      transparent 75px 120px
     );
-
-    document.getElementById(
-        "playButton"
-    ).textContent =
-        playing ? "Ⅱ" : "▶";
-
-    document.getElementById(
-        "miniPlay"
-    ).textContent =
-        playing ? "Ⅱ" : "▶";
 }
 
-
-/* =========================
-   TIME
-========================= */
-
-audio.addEventListener(
-    "loadedmetadata",
-    updateTime
-);
-
-audio.addEventListener(
-    "timeupdate",
-    updateTime
-);
-
-function updateTime() {
-
-    const current =
-        audio.currentTime || 0;
-
-    const duration =
-        audio.duration || 0;
-
-    const progress =
-        document.getElementById("progress");
-
-    progress.max = duration;
-    progress.value = current;
-
-    document.getElementById(
-        "currentTime"
-    ).textContent =
-        formatTime(current);
-
-    document.getElementById(
-        "remainingTime"
-    ).textContent =
-        "-" + formatTime(
-            Math.max(0, duration - current)
-        );
-
-    document.getElementById(
-        "miniTime"
-    ).textContent =
-        formatTime(current) +
-        " / -" +
-        formatTime(
-            Math.max(0, duration - current)
-        );
+/* App */
+.app{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
 }
 
-
-document.getElementById(
-    "progress"
-).addEventListener(
-    "input",
-    function() {
-        audio.currentTime =
-            Number(this.value);
-    }
-);
-
-
-function formatTime(seconds) {
-
-    if (!isFinite(seconds)) {
-        return "0:00";
-    }
-
-    const minutes =
-        Math.floor(seconds / 60);
-
-    const secondsPart =
-        Math.floor(seconds % 60);
-
-    return minutes +
-        ":" +
-        String(secondsPart)
-            .padStart(2, "0");
+.content{
+  flex:1;
+  overflow-y:auto;
+  padding:22px 18px 100px;
 }
 
-
-/* =========================
-   NEXT / PREVIOUS
-========================= */
-
-function nextSong() {
-
-    if (!songs.length) return;
-
-    let next = currentSong + 1;
-
-    if (next >= songs.length) {
-        next = 0;
-    }
-
-    playSong(next);
+/* Pages */
+.page{
+  display:none;
 }
 
-
-function previousSong() {
-
-    if (!songs.length) return;
-
-    let previous =
-        currentSong - 1;
-
-    if (previous < 0) {
-        previous = songs.length - 1;
-    }
-
-    playSong(previous);
+.page.active{
+  display:block;
 }
 
-
-audio.addEventListener(
-    "ended",
-    nextSong
-);
-
-
-/* =========================
-   TABS
-========================= */
-
-function openTab(tab) {
-
-    document.getElementById(
-        "musicTab"
-    ).classList.toggle(
-        "hidden",
-        tab !== "music"
-    );
-
-    document.getElementById(
-        "playerTab"
-    ).classList.toggle(
-        "hidden",
-        tab !== "player"
-    );
-
-    document.getElementById(
-        "profileTab"
-    ).classList.toggle(
-        "hidden",
-        tab !== "profile"
-    );
-
-    document.getElementById(
-        "musicNav"
-    ).classList.toggle(
-        "active",
-        tab === "music"
-    );
-
-    document.getElementById(
-        "playerNav"
-    ).classList.toggle(
-        "active",
-        tab === "player"
-    );
-
-    document.getElementById(
-        "profileNav"
-    ).classList.toggle(
-        "active",
-        tab === "profile"
-    );
-
-    updatePlayer();
+/* Home */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
 }
 
-
-function openFullPlayer() {
-    openTab("player");
+.greeting{
+  font-size:26px;
+  font-weight:bold;
 }
 
+.settings{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  border:2px solid #ff303f;
+  background:#b91425;
+  color:white;
+  font-size:21px;
+}
 
-/* =========================
-   SAVE CHANGES
-========================= */
+/* Cards */
+.section{
+  margin-bottom:22px;
+}
 
-function saveChanges() {
+.section h2{
+  font-size:18px;
+  margin-bottom:10px;
+}
 
-    const name =
-        document.getElementById
+.card{
+  background:rgba(25,8,11,.88);
+  border:1px solid #777;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:10px;
+}
+
+/* Buttons */
+.btn{
+  border:2px solid #777;
+  background:#72111d;
+  color:white;
+  border-radius:14px;
+  padding:11px 16px;
+  font-size:15px;
+}
+
+.btn:active,
+.btn.selected{
+  border-color:white;
+}
+
+/* Player */
+.player-box{
+  background:rgba(20,6,9,.9);
+  border:1px solid #777;
+  border-radius:22px;
+  padding:20px;
+  text-align:center;
+}
+
+.player-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
+}
+
+.record{
+  width:190px;
+  height:190px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,#777 0 7%,#111 8% 12%,#222 13% 20%,#090909 21% 100%);
+  border:5px solid #333;
+}
+
+.song-info{
+  margin-top:18px;
+}
+
+.song-info h2{
+  margin-bottom:5px;
+}
+
+/* Profile */
+.banner{
+  height:150px;
+  border-radius:20px;
+  border:1px solid #777;
+  background:
+    linear-gradient(135deg,#59101a,#170608);
+  position:relative;
+}
+
+.pfp{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:#222;
+  border:5px solid #120506;
+  position:absolute;
+  left:20px;
+  bottom:-45px;
+}
+
+.profile-info{
+  padding:55px 10px 15px;
+}
+
+/* Bottom navigation */
+.nav{
+  position:fixed;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  height:68px;
+  display:flex;
+  gap:8px;
+  padding:8px;
+  background:rgba(15,5,7,.96);
+  border:1px solid #555;
+  border-radius:20px;
+}
+
+.nav button{
+  flex:1;
+  border:2px solid #777;
+  border-radius:14px;
+  background:#5d1019;
+  color:white;
+  font-size:14px;
+}
+
+.nav button.active{
+  border-color:white;
+  background:#861522;
+}
+
+.nav-icon{
+  display:block;
+  font-size:22px;
+  line-height:22px;
+  margin-bottom:2px;
+}
+
+/* Small screens */
+@media(max-width:360px){
+  .record{
+    width:155px;
+    height:155px;
+  }
+
+  .greeting{
+    font-size:22px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<main class="content">
+
+<!-- HOME -->
+<section id="home" class="page active">
+
+  <div class="header">
+    <div class="greeting" id="greeting">
+      Good afternoon
+    </div>
+
+    <button class="settings" aria-label="Settings">⚙</button>
+  </div>
+
+  <div class="section">
+    <h2>Creator's Picks</h2>
+    <div class="card">
+      Your featured music will appear here.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Recently Played</h2>
+    <div class="card">
+      No recently played songs.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Playlists</h2>
+    <button class="btn">+ Create Playlist</button>
+  </div>
+
+</section>
+
+
+<!-- PLAYER -->
+<section id="player" class="page">
+
+  <div class="section">
+    <h1>Player</h1>
+  </div>
+
+  <div class="player-box">
+
+    <div class="player-row">
+
+      <div class="record"></div>
+
+      <button class="btn">
+        Upload Song
+      </button>
+
+    </div>
+
+    <div class="song-info">
+      <h2>No Song Playing</h2>
+      <p>Select a song to start listening.</p>
+    </div>
+
+    <br>
+
+    <button class="btn">▶ Play</button>
+
+  </div>
+
+</section>
+
+
+<!-- PROFILE -->
+<section id="profile" class="page">
+
+  <div class="banner">
+    <div class="pfp"></div>
+  </div>
+
+  <div class="profile-info">
+
+    <h1>Your Profile</h1>
+
+    <p style="margin:8px 0 18px;">
+      Your username
+    </p>
+
+    <button class="btn">
+      Upload Profile Picture
+    </button>
+
+    <br><br>
+
+    <button class="btn">
+      Upload Banner
+    </button>
+
+    <br><br>
+
+    <button class="btn">
+      Save Changes
+    </button>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<!-- BOTTOM NAV -->
+<nav class="nav">
+
+  <button class="active" onclick="showPage('home',this)">
+    <span class="nav-icon">⌂</span>
+    Home
+  </button>
+
+  <button onclick="showPage('player',this)">
+    <span class="nav-icon">▶</span>
+    Play
+  </button>
+
+  <button onclick="showPage('profile',this)">
+    <span class="nav-icon">●</span>
+    Profile
+  </button>
+
+</nav>
+
+</div>
+
+
+<script>
+function showPage(id,button){
+
+  document.querySelectorAll('.page')
+    .forEach(p=>p.classList.remove('active'));
+
+  document.getElementById(id)
+    .classList.add('active');
+
+  document.querySelectorAll('.nav button')
+    .forEach(b=>b.classList.remove('active'));
+
+  button.classList.add('active');
+}
+
+/* Greeting */
+const hour=new Date().getHours();
+
+let greeting="Good night";
+
+if(hour>=5 && hour<12){
+  greeting="Good morning";
+}else if(hour>=12 && hour<17){
+  greeting="Good afternoon";
+}else if(hour>=17 && hour<21){
+  greeting="Good evening";
+}
+
+document.getElementById("greeting").textContent=greeting;
+</script>
+
+</body>
+</html>
