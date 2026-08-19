@@ -6,131 +6,120 @@
 <title>Lost Guitar</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --red:#78101d;
+  --red2:#a8172b;
+  --bright:#ff263d;
+  --line:#777;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  color:#fff;
+  background:#090506;
 }
 
 body{
-  font-family:Arial,sans-serif;
-  color:white;
-  background:#120506;
-  min-height:100vh;
-  overflow:hidden;
-}
-
-/* Background */
-body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:-2;
   background:
-    radial-gradient(circle at 20% 20%,#65121d 0,transparent 35%),
-    radial-gradient(circle at 80% 70%,#3b0b13 0,transparent 40%),
-    linear-gradient(145deg,#080808,#21070b 55%,#090909);
+    linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.35)),
+    url("assets/lost_crimson.png") center/cover fixed;
 }
 
-body:after{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:-1;
-  opacity:.16;
-  background:
-    repeating-radial-gradient(
-      ellipse at center,
-      transparent 0 70px,
-      #b52b3b 72px 73px,
-      transparent 75px 120px
-    );
-}
-
-/* App */
-.app{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-}
+.app{height:100vh}
 
 .content{
-  flex:1;
+  height:100%;
   overflow-y:auto;
-  padding:22px 18px 100px;
+  padding:20px 16px 105px;
 }
 
-/* Pages */
-.page{
-  display:none;
+.page{display:none}
+.page.active{display:block}
+
+/* GLASS EFFECT, SOLID RED */
+.glass{
+  background:rgba(22,5,8,.72);
+  border:1.5px solid var(--line);
+  border-radius:20px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    0 7px 20px rgba(0,0,0,.35);
 }
 
-.page.active{
-  display:block;
-}
-
-/* Home */
+/* HOME */
 .header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:25px;
+  margin-bottom:24px;
 }
 
 .greeting{
-  font-size:26px;
-  font-weight:bold;
+  font-size:25px;
+  font-weight:700;
+  text-shadow:0 2px 8px #000;
 }
 
 .settings{
-  width:44px;
-  height:44px;
-  border-radius:14px;
-  border:2px solid #ff303f;
-  background:#b91425;
-  color:white;
+  width:46px;
+  height:46px;
+  border:2px solid #ff5262;
+  border-radius:15px;
+  background:var(--bright);
+  color:#fff;
   font-size:21px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.25),
+    0 0 14px rgba(255,25,50,.4);
 }
 
-/* Cards */
-.section{
-  margin-bottom:22px;
-}
+.section{margin-bottom:22px}
 
-.section h2{
+.title{
   font-size:18px;
+  font-weight:700;
   margin-bottom:10px;
+  text-shadow:0 2px 7px #000;
 }
 
 .card{
-  background:rgba(25,8,11,.88);
-  border:1px solid #777;
-  border-radius:18px;
   padding:16px;
   margin-bottom:10px;
 }
 
-/* Buttons */
+.card p{
+  opacity:.68;
+  margin-top:5px;
+}
+
+/* BUTTONS */
 .btn{
-  border:2px solid #777;
-  background:#72111d;
-  color:white;
-  border-radius:14px;
+  color:#fff;
+  background:linear-gradient(145deg,#8e1424,#65101a);
+  border:2px solid var(--line);
+  border-radius:15px;
   padding:11px 16px;
   font-size:15px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -2px 5px rgba(0,0,0,.25),
+    0 5px 12px rgba(0,0,0,.3);
+  transition:.12s;
 }
 
-.btn:active,
-.btn.selected{
-  border-color:white;
+.btn:active{
+  transform:scale(.97);
+  border-color:#fff;
 }
 
-/* Player */
-.player-box{
-  background:rgba(20,6,9,.9);
-  border:1px solid #777;
-  border-radius:22px;
-  padding:20px;
+/* PLAYER */
+.player{
+  padding:22px;
   text-align:center;
 }
 
@@ -138,92 +127,195 @@ body:after{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:22px;
+  gap:20px;
 }
 
 .record{
-  width:190px;
-  height:190px;
+  width:185px;
+  height:185px;
   border-radius:50%;
+  flex-shrink:0;
   background:
-    radial-gradient(circle,#777 0 7%,#111 8% 12%,#222 13% 20%,#090909 21% 100%);
-  border:5px solid #333;
+    repeating-radial-gradient(
+      circle,
+      #080808 0 3px,
+      #191919 4px 6px
+    );
+  border:5px solid #303030;
+  box-shadow:0 8px 25px rgba(0,0,0,.65);
 }
 
-.song-info{
+.record:after{
+  content:"";
+  display:block;
+  width:34px;
+  height:34px;
+  margin:70px auto;
+  border-radius:50%;
+  background:#9d1629;
+  border:4px solid #111;
+}
+
+.song{
   margin-top:18px;
 }
 
-.song-info h2{
-  margin-bottom:5px;
-}
+.song h2{font-size:20px}
+.song p{opacity:.65;margin-top:5px}
 
-/* Profile */
+/* PROFILE */
 .banner{
-  height:150px;
-  border-radius:20px;
-  border:1px solid #777;
-  background:
-    linear-gradient(135deg,#59101a,#170608);
+  height:155px;
   position:relative;
 }
 
 .pfp{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  background:#222;
-  border:5px solid #120506;
   position:absolute;
   left:20px;
   bottom:-45px;
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  background:#222;
+  border:5px solid #100407;
+  box-shadow:0 5px 18px #000;
 }
 
-.profile-info{
-  padding:55px 10px 15px;
+.profile{
+  padding:58px 3px 20px;
 }
 
-/* Bottom navigation */
+.username-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.username{
+  font-size:23px;
+  font-weight:700;
+}
+
+.pick{
+  width:31px;
+  height:31px;
+  border-radius:50%;
+  border:1.5px solid var(--line);
+  background:#72101c;
+  color:#fff;
+}
+
+.bio{
+  opacity:.65;
+  margin-top:6px;
+}
+
+/* PROFILE BUTTONS */
+.profile-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:20px;
+}
+
+.save{
+  margin-top:10px;
+}
+
+.save.hidden{display:none}
+
+.save .btn{
+  width:100%;
+}
+
+/* BOTTOM NAV */
 .nav{
   position:fixed;
   left:12px;
   right:12px;
   bottom:12px;
   height:68px;
+  padding:7px;
   display:flex;
   gap:8px;
-  padding:8px;
-  background:rgba(15,5,7,.96);
-  border:1px solid #555;
-  border-radius:20px;
+  z-index:10;
+  background:rgba(17,4,7,.88);
+  border:1.5px solid #666;
+  border-radius:21px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 7px 20px rgba(0,0,0,.45);
 }
 
 .nav button{
   flex:1;
-  border:2px solid #777;
-  border-radius:14px;
-  background:#5d1019;
-  color:white;
-  font-size:14px;
+  border:2px solid var(--line);
+  border-radius:15px;
+  background:#65101a;
+  color:#fff;
+  font-size:13px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
 }
 
 .nav button.active{
-  border-color:white;
-  background:#861522;
+  border-color:#fff;
+  background:#8e1424;
 }
 
-.nav-icon{
+.icon{
   display:block;
-  font-size:22px;
-  line-height:22px;
-  margin-bottom:2px;
+  height:20px;
+  margin-bottom:3px;
 }
 
-/* Small screens */
-@media(max-width:360px){
+/* HOUSE */
+.house{
+  width:18px;
+  height:14px;
+  background:#fff;
+  margin:auto;
+  clip-path:polygon(50% 0,100% 42%,100% 100%,0 100%,0 42%);
+}
+
+/* PLAY */
+.play{
+  width:0;
+  height:0;
+  border-top:9px solid transparent;
+  border-bottom:9px solid transparent;
+  border-left:14px solid #fff;
+  margin:auto;
+}
+
+/* PROFILE */
+.person:before{
+  content:"";
+  display:block;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#fff;
+  margin:0 auto 2px;
+}
+
+.person:after{
+  content:"";
+  display:block;
+  width:18px;
+  height:10px;
+  border-radius:10px 10px 4px 4px;
+  background:#fff;
+  margin:auto;
+}
+
+@media(max-width:370px){
   .record{
-    width:155px;
-    height:155px;
+    width:150px;
+    height:150px;
+  }
+
+  .record:after{
+    margin:53px auto;
   }
 
   .greeting{
@@ -243,30 +335,36 @@ body:after{
 <section id="home" class="page active">
 
   <div class="header">
-    <div class="greeting" id="greeting">
-      Good afternoon
-    </div>
+    <div class="greeting" id="greeting"></div>
 
-    <button class="settings" aria-label="Settings">⚙</button>
+    <button class="settings">
+      ⚙
+    </button>
   </div>
 
   <div class="section">
-    <h2>Creator's Picks</h2>
-    <div class="card">
-      Your featured music will appear here.
-    </div>
-  </div>
+    <div class="title">Creator's Picks</div>
 
-  <div class="section">
-    <h2>Recently Played</h2>
-    <div class="card">
-      No recently played songs.
+    <div class="card glass">
+      <strong>Featured Music</strong>
+      <p>Your featured music will appear here.</p>
     </div>
   </div>
 
   <div class="section">
-    <h2>Playlists</h2>
-    <button class="btn">+ Create Playlist</button>
+    <div class="title">Recently Played</div>
+
+    <div class="card glass">
+      <p>No recently played songs.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="title">Playlists</div>
+
+    <div class="card glass">
+      <button class="btn">+ Create Playlist</button>
+    </div>
   </div>
 
 </section>
@@ -275,11 +373,9 @@ body:after{
 <!-- PLAYER -->
 <section id="player" class="page">
 
-  <div class="section">
-    <h1>Player</h1>
-  </div>
+  <div class="title">Player</div>
 
-  <div class="player-box">
+  <div class="player glass">
 
     <div class="player-row">
 
@@ -291,14 +387,16 @@ body:after{
 
     </div>
 
-    <div class="song-info">
+    <div class="song">
       <h2>No Song Playing</h2>
       <p>Select a song to start listening.</p>
     </div>
 
     <br>
 
-    <button class="btn">▶ Play</button>
+    <button class="btn">
+      ▶ Play
+    </button>
 
   </div>
 
@@ -308,433 +406,51 @@ body:after{
 <!-- PROFILE -->
 <section id="profile" class="page">
 
-  <div class="banner">
+  <div class="banner glass">
     <div class="pfp"></div>
   </div>
 
-  <div class="profile-info">
+  <div class="profile">
 
-    <h1>Your Profile</h1>
+    <div class="username-row">
 
-    <p style="margin:8px 0 18px;">
-      Your username
-    </p>
+      <div class="username" id="username">
+        Your Username
+      </div>
 
-    <button class="btn">
-      Upload Profile Picture
-    </button>
-
-    <br><br>
-
-    <button class="btn">
-      Upload Banner
-    </button>
-
-    <br><br>
-
-    <button class="btn">
-      Save Changes
-    </button>
-
-  </div>
-
-</section>
-
-</main>
-
-
-<!-- BOTTOM NAV -->
-<nav class="nav">
-
-  <button class="active" onclick="showPage('home',this)">
-    <span class="nav-icon">⌂</span>
-    Home
-  </button>
-
-  <button onclick="showPage('player',this)">
-    <span class="nav-icon">▶</span>
-    Play
-  </button>
-
-  <button onclick="showPage('profile',this)">
-    <span class="nav-icon">●</span>
-    Profile
-  </button>
-
-</nav>
-
-</div>
-
-
-<script>
-function showPage(id,button){
-
-  document.querySelectorAll('.page')
-    .forEach(p=>p.classList.remove('active'));
-
-  document.getElementById(id)
-    .classList.add('active');
-
-  document.querySelectorAll('.nav button')
-    .forEach(b=>b.classList.remove('active'));
-
-  button.classList.add('active');
-}
-
-/* Greeting */
-const hour=new Date().getHours();
-
-let greeting="Good night";
-
-if(hour>=5 && hour<12){
-  greeting="Good morning";
-}else if(hour>=12 && hour<17){
-  greeting="Good afternoon";
-}else if(hour>=17 && hour<21){
-  greeting="Good evening";
-}
-
-document.getElementById("greeting").textContent=greeting;
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lost Guitar</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Arial,sans-serif;
-  color:white;
-  background:#120506;
-  min-height:100vh;
-  overflow:hidden;
-}
-
-/* Background */
-body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:-2;
-  background:
-    radial-gradient(circle at 20% 20%,#65121d 0,transparent 35%),
-    radial-gradient(circle at 80% 70%,#3b0b13 0,transparent 40%),
-    linear-gradient(145deg,#080808,#21070b 55%,#090909);
-}
-
-body:after{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:-1;
-  opacity:.16;
-  background:
-    repeating-radial-gradient(
-      ellipse at center,
-      transparent 0 70px,
-      #b52b3b 72px 73px,
-      transparent 75px 120px
-    );
-}
-
-/* App */
-.app{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-.content{
-  flex:1;
-  overflow-y:auto;
-  padding:22px 18px 100px;
-}
-
-/* Pages */
-.page{
-  display:none;
-}
-
-.page.active{
-  display:block;
-}
-
-/* Home */
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:25px;
-}
-
-.greeting{
-  font-size:26px;
-  font-weight:bold;
-}
-
-.settings{
-  width:44px;
-  height:44px;
-  border-radius:14px;
-  border:2px solid #ff303f;
-  background:#b91425;
-  color:white;
-  font-size:21px;
-}
-
-/* Cards */
-.section{
-  margin-bottom:22px;
-}
-
-.section h2{
-  font-size:18px;
-  margin-bottom:10px;
-}
-
-.card{
-  background:rgba(25,8,11,.88);
-  border:1px solid #777;
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:10px;
-}
-
-/* Buttons */
-.btn{
-  border:2px solid #777;
-  background:#72111d;
-  color:white;
-  border-radius:14px;
-  padding:11px 16px;
-  font-size:15px;
-}
-
-.btn:active,
-.btn.selected{
-  border-color:white;
-}
-
-/* Player */
-.player-box{
-  background:rgba(20,6,9,.9);
-  border:1px solid #777;
-  border-radius:22px;
-  padding:20px;
-  text-align:center;
-}
-
-.player-row{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:22px;
-}
-
-.record{
-  width:190px;
-  height:190px;
-  border-radius:50%;
-  background:
-    radial-gradient(circle,#777 0 7%,#111 8% 12%,#222 13% 20%,#090909 21% 100%);
-  border:5px solid #333;
-}
-
-.song-info{
-  margin-top:18px;
-}
-
-.song-info h2{
-  margin-bottom:5px;
-}
-
-/* Profile */
-.banner{
-  height:150px;
-  border-radius:20px;
-  border:1px solid #777;
-  background:
-    linear-gradient(135deg,#59101a,#170608);
-  position:relative;
-}
-
-.pfp{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  background:#222;
-  border:5px solid #120506;
-  position:absolute;
-  left:20px;
-  bottom:-45px;
-}
-
-.profile-info{
-  padding:55px 10px 15px;
-}
-
-/* Bottom navigation */
-.nav{
-  position:fixed;
-  left:12px;
-  right:12px;
-  bottom:12px;
-  height:68px;
-  display:flex;
-  gap:8px;
-  padding:8px;
-  background:rgba(15,5,7,.96);
-  border:1px solid #555;
-  border-radius:20px;
-}
-
-.nav button{
-  flex:1;
-  border:2px solid #777;
-  border-radius:14px;
-  background:#5d1019;
-  color:white;
-  font-size:14px;
-}
-
-.nav button.active{
-  border-color:white;
-  background:#861522;
-}
-
-.nav-icon{
-  display:block;
-  font-size:22px;
-  line-height:22px;
-  margin-bottom:2px;
-}
-
-/* Small screens */
-@media(max-width:360px){
-  .record{
-    width:155px;
-    height:155px;
-  }
-
-  .greeting{
-    font-size:22px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-<main class="content">
-
-<!-- HOME -->
-<section id="home" class="page active">
-
-  <div class="header">
-    <div class="greeting" id="greeting">
-      Good afternoon
-    </div>
-
-    <button class="settings" aria-label="Settings">⚙</button>
-  </div>
-
-  <div class="section">
-    <h2>Creator's Picks</h2>
-    <div class="card">
-      Your featured music will appear here.
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Recently Played</h2>
-    <div class="card">
-      No recently played songs.
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Playlists</h2>
-    <button class="btn">+ Create Playlist</button>
-  </div>
-
-</section>
-
-
-<!-- PLAYER -->
-<section id="player" class="page">
-
-  <div class="section">
-    <h1>Player</h1>
-  </div>
-
-  <div class="player-box">
-
-    <div class="player-row">
-
-      <div class="record"></div>
-
-      <button class="btn">
-        Upload Song
+      <button class="pick"
+              onclick="editUsername()">
+        ◇
       </button>
 
     </div>
 
-    <div class="song-info">
-      <h2>No Song Playing</h2>
-      <p>Select a song to start listening.</p>
+    <div class="bio">
+      Your bio goes here.
     </div>
 
-    <br>
+    <div class="profile-buttons">
 
-    <button class="btn">▶ Play</button>
+      <button class="btn"
+              onclick="changed()">
+        Change PFP
+      </button>
 
-  </div>
+      <button class="btn"
+              onclick="changed()">
+        Change Banner
+      </button>
 
-</section>
+    </div>
 
+    <div class="save hidden" id="save">
 
-<!-- PROFILE -->
-<section id="profile" class="page">
+      <button class="btn"
+              onclick="saved()">
+        Save Changes
+      </button>
 
-  <div class="banner">
-    <div class="pfp"></div>
-  </div>
-
-  <div class="profile-info">
-
-    <h1>Your Profile</h1>
-
-    <p style="margin:8px 0 18px;">
-      Your username
-    </p>
-
-    <button class="btn">
-      Upload Profile Picture
-    </button>
-
-    <br><br>
-
-    <button class="btn">
-      Upload Banner
-    </button>
-
-    <br><br>
-
-    <button class="btn">
-      Save Changes
-    </button>
+    </div>
 
   </div>
 
@@ -746,18 +462,25 @@ body:after{
 <!-- BOTTOM NAV -->
 <nav class="nav">
 
-  <button class="active" onclick="showPage('home',this)">
-    <span class="nav-icon">⌂</span>
+  <button class="active"
+          onclick="page('home',this)">
+    <span class="icon">
+      <span class="house"></span>
+    </span>
     Home
   </button>
 
-  <button onclick="showPage('player',this)">
-    <span class="nav-icon">▶</span>
+  <button onclick="page('player',this)">
+    <span class="icon">
+      <span class="play"></span>
+    </span>
     Play
   </button>
 
-  <button onclick="showPage('profile',this)">
-    <span class="nav-icon">●</span>
+  <button onclick="page('profile',this)">
+    <span class="icon">
+      <span class="person"></span>
+    </span>
     Profile
   </button>
 
@@ -767,35 +490,62 @@ body:after{
 
 
 <script>
-function showPage(id,button){
 
-  document.querySelectorAll('.page')
-    .forEach(p=>p.classList.remove('active'));
+/* NAVIGATION */
+function page(id,btn){
+
+  document.querySelectorAll(".page")
+    .forEach(function(x){
+      x.classList.remove("active");
+    });
 
   document.getElementById(id)
-    .classList.add('active');
+    .classList.add("active");
 
-  document.querySelectorAll('.nav button')
-    .forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll(".nav button")
+    .forEach(function(x){
+      x.classList.remove("active");
+    });
 
-  button.classList.add('active');
+  btn.classList.add("active");
 }
 
-/* Greeting */
-const hour=new Date().getHours();
 
-let greeting="Good night";
+/* GREETING */
+var h=new Date().getHours();
+var g="Good night";
 
-if(hour>=5 && hour<12){
-  greeting="Good morning";
-}else if(hour>=12 && hour<17){
-  greeting="Good afternoon";
-}else if(hour>=17 && hour<21){
-  greeting="Good evening";
+if(h>=5&&h<12)g="Good morning";
+else if(h>=12&&h<17)g="Good afternoon";
+else if(h>=17&&h<21)g="Good evening";
+
+document.getElementById("greeting").textContent=g;
+
+
+/* PROFILE SAVE */
+function changed(){
+  document.getElementById("save")
+    .classList.remove("hidden");
 }
 
-document.getElementById("greeting").textContent=greeting;
+function saved(){
+  document.getElementById("save")
+    .classList.add("hidden");
+}
+
+function editUsername(){
+
+  var n=prompt("Change username:");
+
+  if(n&&n.trim()){
+    document.getElementById("username")
+      .textContent=n.trim();
+
+    changed();
+  }
+}
+
 </script>
 
 </body>
-</html>
+      </html>q
