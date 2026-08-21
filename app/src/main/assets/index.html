@@ -546,7 +546,84 @@ function editUsername(){
     changed();
   }
 }
+/* =========================
+   LOSTGUITAR ANDROID AUDIO
+   ========================= */
 
+window.addImportedMp3 = function(name) {
+
+    var title = document.querySelector(".song h2");
+    var subtitle = document.querySelector(".song p");
+
+    if (title) {
+        title.textContent = name;
+    }
+
+    if (subtitle) {
+        subtitle.textContent = "Ready to play";
+    }
+};
+
+
+window.onNativeSongReady = function(name) {
+
+    var title = document.querySelector(".song h2");
+
+    if (title) {
+        title.textContent = name;
+    }
+};
+
+
+window.onNativePlay = function() {
+
+    var playButtons =
+        document.querySelectorAll(
+            '[onclick*="play"], .play'
+        );
+
+    playButtons.forEach(function(button) {
+        button.classList.add("playing");
+    });
+};
+
+
+window.onNativePause = function() {
+
+    var playButtons =
+        document.querySelectorAll(
+            '[onclick*="play"], .play'
+        );
+
+    playButtons.forEach(function(button) {
+        button.classList.remove("playing");
+    });
+};
+
+
+window.onNativeStop = function() {
+
+    var playButtons =
+        document.querySelectorAll(
+            '[onclick*="play"], .play'
+        );
+
+    playButtons.forEach(function(button) {
+        button.classList.remove("playing");
+    });
+};
+
+
+window.onNativeError = function() {
+
+    var subtitle =
+        document.querySelector(".song p");
+
+    if (subtitle) {
+        subtitle.textContent =
+            "Couldn't play this MP3";
+    }
+};
 </script>
 
 </body>
